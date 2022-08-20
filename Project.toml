@@ -1,0 +1,13 @@
+name = "Noise"
+uuid = "3aba9546-43d6-4ec1-9542-6d3f8f2a5c7f"
+authors = ["Damian <dcamenisch98@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
