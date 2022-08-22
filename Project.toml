@@ -3,6 +3,9 @@ uuid = "3aba9546-43d6-4ec1-9542-6d3f8f2a5c7f"
 authors = ["Damian <dcamenisch98@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+Random30 = "9cf6a8ae-57d9-46c8-8cd9-7e7ecb7c4ce2"
+
 [compat]
 julia = "1"
 
