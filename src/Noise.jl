@@ -4,6 +4,7 @@ using Random30
 
 SEED::UInt64 = 0 # one seed to rule them all
 
+set_seed(u) = global SEED = hash30(u)
 
 include("Random.jl")
 export random_noise
@@ -11,7 +12,11 @@ export random_noise
 include("Value.jl")
 export value_noise
 
+include("Perlin.jl")
+export perlin_noise
 
+include("Voronoi.jl")
+export voronoi_noise
 
 
 @inline function interpolate(x, l, r)
