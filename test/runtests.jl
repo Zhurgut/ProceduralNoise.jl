@@ -1,6 +1,8 @@
 using Noise
+using Noise.Interpolate
 using Test
 using Random30
+using Plots
 
 @testset "Noise.jl" begin
     # Write your tests here.
@@ -19,6 +21,19 @@ function f()
     end
     return mn, mx
 end
+
+function intp_plots()
+    X = collect(0:0.01:1)
+    L = 1
+    R = 2
+    Y = interpolate.(X, L, R)
+
+    r = rand()
+    Y2 = interpolate.(X, r, L, R, R, L)
+    p = plot(X, Y)
+    plot!(p, X, Y2)
+end
+intp_plots()
 
 
 @testset "range of perlin noise" begin
