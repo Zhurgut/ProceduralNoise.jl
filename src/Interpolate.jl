@@ -4,15 +4,15 @@ export interpolate
 
 function interpolate(x, l, r)
     x² = x*x
-    fx = fma(fma(6.0, x, -15), x², 10x)
+    fx = fma(fma(6, x, -15), x², 10x)
     fma(fx, x²*(r-l), l)
 end
 
 function interpolate(x, y, tl, tr, bl, br)
     x² = x*x
     y² = y*y
-    fx = fma(fma(6.0, x, -15), x², 10x)
-    fy = fma(fma(6.0, y, -15), y², 10y) 
+    fx = fma(fma(6, x, -15), x², 10x)
+    fy = fma(fma(6, y, -15), y², 10y) 
     t = fma(fx, x²*(tr-tl), tl)
     b = fma(fx, x²*(br-bl), bl)
     return fma(fy*y², b-t, t)
@@ -22,9 +22,9 @@ function interpolate(x, y, z, tl1, tr1, bl1, br1, tl2, tr2, bl2, br2)
     x² = x*x
     y² = y*y
     z² = z*z
-    fx = fma(fma(6.0, x, -15), x², 10x)
-    fy = fma(fma(6.0, y, -15), y², 10y)
-    fz = fma(fma(6.0, z, -15), z², 10z) 
+    fx = fma(fma(6, x, -15), x², 10x)
+    fy = fma(fma(6, y, -15), y², 10y)
+    fz = fma(fma(6, z, -15), z², 10z) 
     t1 = fma(fx, x²*(tr1-tl1), tl1)
     b1 = fma(fx, x²*(br1-bl1), bl1)
     t2 = fma(fx, x²*(tr2-tl2), tl2)
@@ -39,10 +39,10 @@ function interpolate(x, y, z, w, atl1, atr1, abl1, abr1, atl2, atr2, abl2, abr2,
     y² = y*y
     z² = z*z
     w² = w*w
-    fx = fma(fma(6.0, x, -15), x², 10x)
-    fy = fma(fma(6.0, y, -15), y², 10y)
-    fz = fma(fma(6.0, z, -15), z², 10z)
-    fw = fma(fma(6.0, w, -15), w², 10w) 
+    fx = fma(fma(6, x, -15), x², 10x)
+    fy = fma(fma(6, y, -15), y², 10y)
+    fz = fma(fma(6, z, -15), z², 10z)
+    fw = fma(fma(6, w, -15), w², 10w) 
     at1 = fma(fx, x²*(atr1-atl1), atl1) 
     ab1 = fma(fx, x²*(abr1-abl1), abl1)
     at2 = fma(fx, x²*(atr2-atl2), atl2)
