@@ -1,2 +1,2 @@
 
-random_noise(coords...) = random_from(coords...)
+random_noise(coords...) = random_from(coords...)[1]
