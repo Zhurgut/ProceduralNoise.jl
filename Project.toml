@@ -3,7 +3,11 @@ uuid = "3aba9546-43d6-4ec1-9542-6d3f8f2a5c7f"
 version = "0.1.0"
 authors = ["Damian <dcamenisch98@gmail.com> and contributors"]
 
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
 [compat]
+LinearAlgebra = "1.12.0"
 julia = "1"
 
 [extras]
