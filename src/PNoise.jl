@@ -24,6 +24,6 @@ export perlin_noise
 # include("Voronoi.jl")
 # export voronoi_noise
 
-
-
+# https://en.wikipedia.org/wiki/Simulation_noise
+# https://en.wikipedia.org/wiki/Wavelet_noise
 end

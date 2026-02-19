@@ -12,8 +12,11 @@ function perlin_noise(x::Float64)
     return 0.5 + interpolate(d, vl*d, vr*(d-1))
 end
 
-let index::Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(undef, Threads.nthreads()),
-    cache::Vector{NTuple{4, Tuple{Float64, Float64}}} = Vector{NTuple{4, Tuple{Float64, Float64}}}(undef, Threads.nthreads())
+let index::Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(undef, 4*Threads.nthreads()),
+    cache::Vector{NTuple{4, Tuple{Float64, Float64}}} = Vector{NTuple{4, Tuple{Float64, Float64}}}(undef, 2*Threads.nthreads())
+
+    thread_idx_index() = 4*(Threads.threadid() - 1) + 1
+    thread_idx_cache() = 2*(Threads.threadid() - 1) + 1
 
     function store!(b, l, t, r)
         v_bl = unit_vector_from(b, l)
@@ -21,13 +24,12 @@ let index::Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(undef, Threads.nthr
         v_tl = unit_vector_from(t, l)
         v_tr = unit_vector_from(t, r)
 
-        i = Threads.threadid()
-        index[i] = (b, l)
-        cache[i] = (v_bl, v_br, v_tl, v_tr)
+        index[thread_idx_index()] = (b, l)
+        cache[thread_idx_cache()] = (v_bl, v_br, v_tl, v_tr)
     end
 
     function load()
-        cache[Threads.threadid()]
+        cache[thread_idx_cache()]
     end
 
     store!(0, 0, 1, 1)
@@ -36,7 +38,7 @@ let index::Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(undef, Threads.nthr
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
 
-        v_bl, v_br, v_tl, v_tr = if index[Threads.threadid()] == (b, l)
+        v_bl, v_br, v_tl, v_tr = if index[thread_idx_index()] == (b, l)
             load()
         else
             store!(b, l, t, r)
@@ -56,8 +58,11 @@ let index::Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(undef, Threads.nthr
 end
 
 
-let index::Vector{Tuple{Int, Int, Int}} = Vector{Tuple{Int, Int, Int}}(undef, Threads.nthreads()),
+let index::Vector{Tuple{Int, Int, Int}} = Vector{Tuple{Int, Int, Int}}(undef, 3*Threads.nthreads()),
     cache::Vector{NTuple{8, Tuple{Float64, Float64, Float64}}} = Vector{NTuple{8, Tuple{Float64, Float64, Float64}}}(undef, Threads.nthreads())
+
+    thread_idx_index() = 3*(Threads.threadid() - 1) + 1
+    thread_idx_cache() = Threads.threadid()
 
     function store!(b, l, t, r, a, o)
         v_bla = unit_vector_from(b, l, a)
@@ -69,13 +74,12 @@ let index::Vector{Tuple{Int, Int, Int}} = Vector{Tuple{Int, Int, Int}}(undef, Th
         v_tlo = unit_vector_from(t, l, o)
         v_tro = unit_vector_from(t, r, o)
 
-        i = Threads.threadid()
-        index[i] = (b, l, a)
-        cache[i] = (v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro)
+        index[thread_idx_index()] = (b, l, a)
+        cache[thread_idx_cache()] = (v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro)
     end
 
     function load()
-        cache[Threads.threadid()]
+        cache[thread_idx_cache()]
     end
 
     store!(0, 0, 1, 1, 0, 1)
@@ -85,7 +89,7 @@ let index::Vector{Tuple{Int, Int, Int}} = Vector{Tuple{Int, Int, Int}}(undef, Th
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)
 
-        v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro = if index[Threads.threadid()] == (b, l, a)
+        v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro = if index[thread_idx_index()] == (b, l, a)
             load()
         else
             store!(b, l, t, r, a, o)
@@ -109,8 +113,11 @@ let index::Vector{Tuple{Int, Int, Int}} = Vector{Tuple{Int, Int, Int}}(undef, Th
 end
 
 
-let index::Vector{Tuple{Int, Int, Int, Int}} = Vector{Tuple{Int, Int, Int, Int}}(undef, Threads.nthreads()),
+let index::Vector{Tuple{Int, Int, Int, Int}} = Vector{Tuple{Int, Int, Int, Int}}(undef, 2*Threads.nthreads()),
     cache::Vector{NTuple{16, Tuple{Float64, Float64, Float64, Float64}}} = Vector{NTuple{16, Tuple{Float64, Float64, Float64, Float64}}}(undef, Threads.nthreads())
+
+    thread_idx_index() = 2*(Threads.threadid() - 1) + 1
+    thread_idx_cache() = Threads.threadid()
 
     function store!(b, l, t, r, a, o, w1, w2)
         v_bla1 = unit_vector_from(b, l, a, w1)
@@ -130,13 +137,12 @@ let index::Vector{Tuple{Int, Int, Int, Int}} = Vector{Tuple{Int, Int, Int, Int}}
         v_tlo2 = unit_vector_from(t, l, o, w2)
         v_tro2 = unit_vector_from(t, r, o, w2)
 
-        i = Threads.threadid()
-        index[i] = (b, l, a, w1)
-        cache[i] = (v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2)
+        index[thread_idx_index()] = (b, l, a, w1)
+        cache[thread_idx_cache()i] = (v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2)
     end
 
     function load()
-        cache[Threads.threadid()]
+        cache[thread_idx_cache()]
     end
 
     store!(0, 0, 1, 1, 0, 1, 0, 1)
@@ -147,7 +153,7 @@ let index::Vector{Tuple{Int, Int, Int, Int}} = Vector{Tuple{Int, Int, Int, Int}}
         a, o, dz = bounds(z)
         w1, w2, dw = bounds(w)
 
-        v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2 = if index[Threads.threadid()] == (b, l, a, w1)
+        v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2 = if index[thread_idx_index()] == (b, l, a, w1)
             load()
         else
             store!(b, l, t, r, a, o, w1, w2)

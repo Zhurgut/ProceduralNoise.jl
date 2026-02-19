@@ -1,3 +1,5 @@
+# distance from border
+
 
 voronoi_noise(coords...) = voronoi_noise(Float64.(coords)...)
 

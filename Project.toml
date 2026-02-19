@@ -5,6 +5,7 @@ authors = ["Damian <dcamenisch98@gmail.com> and contributors"]
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+PShapes = "1e37758b-0744-482d-88c6-a60636b43abc"
 
 [compat]
 LinearAlgebra = "1.12.0"
