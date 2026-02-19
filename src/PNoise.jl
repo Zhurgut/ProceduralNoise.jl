@@ -18,6 +18,16 @@ end
 include("Value.jl")
 export value_noise
 
+
+struct Padding{T, P}
+    value::T
+    padding::P
+end
+Padding{T, NTuple{V, UInt8}}(v::T) where {T, V} = Padding{T, NTuple{V, UInt8}}(v, ntuple(i->UInt8(0), Val(V)))
+pad(::Type{T}) where T = Padding{T, NTuple{(64 - (sizeof(T) % 64)) % 64, UInt8}} # pad to the next cacheline
+Base.zero(::Type{Padding{T, NTuple{V, UInt8}}}) where {T, V} = Padding(zero(T), ntuple(i->UInt8(0), Val(V)))
+
+
 include("Perlin.jl")
 export perlin_noise
 
