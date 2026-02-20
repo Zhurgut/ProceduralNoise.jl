@@ -388,3 +388,72 @@ function min_max_dists4d()
     end
     by_l1
 end
+
+
+
+using LinearAlgebra: norm
+function max_dists1d()
+    ps = [-3, -2, -1, 1, 2, 3]
+    max_dists = zeros(5)
+    for x=0:0.001:1
+        dists = [abs(x - p) for p in ps]
+        sort!(dists)
+        for i = 1:5
+            max_dists[i] = max(max_dists[i], dists[i])
+        end
+
+    end
+    return max_dists
+end
+
+function max_dists2d()
+    ps1 = [-3, -2, -1, 1, 2, 3]
+    ps = [(p1, p2) for p1 in ps1 for p2 in ps1]
+    max_dists = zeros(8)
+    for x=0:0.01:1, y=0:0.01:1
+        dists = [norm((x, y) .- p) for p in ps]
+        sort!(dists)
+        for i = 1:8
+            max_dists[i] = max(max_dists[i], dists[i])
+        end
+
+    end
+    return max_dists
+end
+
+function max_dists3d()
+    ps1 = [-3, -2, -1, 1, 2, 3]
+    ps = [(p1, p2, p3) for p1 in ps1 for p2 in ps1 for p3 in ps1]
+    max_dists = zeros(8)
+    for x=0:0.01:1, y=0:0.01:1, z=0:0.01:1
+        dists = [norm((x, y, z) .- p) for p in ps]
+        sort!(dists)
+        for i = 1:8
+            max_dists[i] = max(max_dists[i], dists[i])
+        end
+
+    end
+    return max_dists
+end
+
+function max_dists4d()
+    ps1 = [ -1, 1, 2]
+    ps = [(p1, p2, p3, p4) for p1 in ps1 for p2 in ps1 for p3 in ps1 for p4 in ps1]
+    max_dists::Vector{Float64} = zeros(8)
+    dists::Vector{Float64} = zeros(length(ps))
+    d = 0.01
+    for x=0:d:1
+        println(x)
+        for y=0:d:1, z=0:d:1, w=0:d:1
+            for i=eachindex(dists)
+                dists[i] = norm((x, y, z, w) .- ps[i])
+            end
+            sort!(dists)
+            for i = 1:8
+                max_dists[i] = max(max_dists[i], dists[i])
+            end
+        end
+
+    end
+    return max_dists
+end
