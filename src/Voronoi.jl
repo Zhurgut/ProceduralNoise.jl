@@ -1,7 +1,4 @@
 
-# distances from points 
-
-
 let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
     index::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
     nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
@@ -36,11 +33,10 @@ let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
     end
 
     function store!(l)
-        i = get_points!(1, l-1)
-        i = get_points!(i, l)
-        i = get_points!(i, l+1)
-        i = get_points!(i, l+2)
-        i = get_points!(i, l-2)
+        i = 1
+        for f=-2:2
+            i = get_points!(i, l+f)
+        end
 
         ti = Threads.threadid()
         len = i-1
@@ -54,7 +50,7 @@ let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
 
 
     global function voronoi_points(x)
-        l, r, d = bounds(x)
+        l, _, _ = bounds(x)
         ti = Threads.threadid()
         return index[ti].value == l ? load() : store!(l)
     end
@@ -62,7 +58,7 @@ let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
 end
 
 
-let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (40, Threads.nthreads())),
+let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, Threads.nthreads())),
     index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), Threads.nthreads())
     nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
 
@@ -99,22 +95,12 @@ let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (40, Threads.
     end
 
     function store!(l, b)
-        i = get_points!(1, l-1, b-1)
-        i = get_points!(i, l, b-1)
-        i = get_points!(i, l+1, b-1)
-
-        i = get_points!(i, l-1, b)
-        i = get_points!(i, l, b)
-        i = get_points!(i, l+1, b)
-
-        i = get_points!(i, l-1, b+1)
-        i = get_points!(i, l, b+1)
-        i = get_points!(i, l+1, b+1)
-
-        i = get_points!(i, l, b+2)
-        i = get_points!(i, l, b-2)
-        i = get_points!(i, l+2, b)
-        i = get_points!(i, l-2, b)
+        i = 1
+        for x=-2:2, y=-2:2
+            if (abs(x) + abs(y) <= 3)
+                i = get_points!(i, l+x, b+y)
+            end
+        end
 
         ti = Threads.threadid()
         len = i-1
@@ -128,8 +114,8 @@ let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (40, Threads.
 
 
     global function voronoi_points(x, y)
-        l, r, dx = bounds(x)
-        b, t, dy = bounds(y)
+        l, _, _ = bounds(x)
+        b, _, _ = bounds(y)
         ti = Threads.threadid()
 
         return index[ti].value == (l, b) ? load() : store!(l, b)
@@ -139,7 +125,7 @@ end
 
 
 
-let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (75, Threads.nthreads())),
+let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, Threads.nthreads())),
     index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), Threads.nthreads())
     nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
 
@@ -181,7 +167,7 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (75, Threads.
     function store!(l, b, a)
         i = 1
         for x=-2:2, y=-2:2, z=-2:2
-            if (abs(x) + abs(y) + abs(z) <= 2)
+            if (abs(x) + abs(y) + abs(z) <= 5)
                 i = get_points!(i, l+x, b+y, a+z)
             end
         end
@@ -197,9 +183,9 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (75, Threads.
     store!(0, 0, 0)
 
     global function voronoi_points(x, y, z)
-        l, r, dx = bounds(x)
-        b, t, dy = bounds(y)
-        a, o, dz = bounds(z)
+        l, _, _ = bounds(x)
+        b, _, _ = bounds(y)
+        a, _, _ = bounds(z)
         ti = Threads.threadid()
 
         return index[ti].value == (l, b, a) ? load() : store!(l, b, a)
@@ -210,7 +196,7 @@ end
 
 
 
-let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (120, Threads.nthreads())),
+let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, Threads.nthreads())),
     index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), Threads.nthreads())
     nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
 
@@ -256,9 +242,8 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (120, Threads
         i = 1
         
         for x=-2:2, y=-2:2, z=-2:2, w=-2:2
-            if (abs(x) + abs(y) + abs(z) + abs(w) <= 2)
+            if (abs(x) + abs(y) + abs(z) + abs(w) <= 7)
                 i = get_points!(i, l+x, b+y, a+z, v+w)
-                # println(i)
             end
         end
 
@@ -274,9 +259,9 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (120, Threads
 
 
     global function voronoi_points(x, y, z, w)
-        l, r, dx = bounds(x)
-        b, t, dy = bounds(y)
-        a, o, dz = bounds(z)
+        l, _, _ = bounds(x)
+        b, _, _ = bounds(y)
+        a, _, _ = bounds(z)
         v, _, _  = bounds(w)
         ti = Threads.threadid()
 
@@ -284,3 +269,4 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (120, Threads
     end
 
 end
+

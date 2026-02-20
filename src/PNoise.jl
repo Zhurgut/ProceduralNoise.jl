@@ -32,8 +32,9 @@ Base.zero(::Type{NTuple{V, T}}) where {V, T} = ntuple(i->zero(T), Val(V))
 include("Perlin.jl")
 export perlin_noise
 
-# include("Voronoi.jl")
-# export voronoi_noise
+include("Voronoi.jl")
+include("Worley.jl")
+export worley_noise
 
 
 
