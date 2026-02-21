@@ -19,12 +19,15 @@ include("Value.jl")
 export value_noise
 
 
+const MAX_NR_THREADS::Int = 64
+
+# pad to the next cacheline
 struct Padding{T, P}
     value::T
     padding::P
 end
 Padding{T, NTuple{V, UInt8}}(v::T) where {T, V} = Padding{T, NTuple{V, UInt8}}(v, ntuple(i->UInt8(0), Val(V)))
-pad(::Type{T}) where T = Padding{T, NTuple{(64 - (sizeof(T) % 64)) % 64, UInt8}} # pad to the next cacheline
+pad(::Type{T}) where T = Padding{T, NTuple{(64 - (sizeof(T) % 64)) % 64, UInt8}} 
 Base.zero(::Type{Padding{T, NTuple{V, UInt8}}}) where {T, V} = Padding(zero(T), ntuple(i->UInt8(0), Val(V)))
 Base.zero(::Type{NTuple{V, T}}) where {V, T} = ntuple(i->zero(T), Val(V))
 

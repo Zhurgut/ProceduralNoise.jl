@@ -12,35 +12,37 @@ function perlin_noise(x::Float64)
     return 0.5 + interpolate(d, vl*d, vr*(d-1))
 end
 
-let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), Threads.nthreads()),
-    cache::Vector{pad(NTuple{4, Tuple{Float64, Float64}})} = zeros(pad(NTuple{4, Tuple{Float64, Float64}}), Threads.nthreads())
 
-    function store!(b, l, t, r)
+
+let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THREADS),
+    cache::Vector{pad(NTuple{4, Tuple{Float64, Float64}})} = zeros(pad(NTuple{4, Tuple{Float64, Float64}}), MAX_NR_THREADS)
+
+    function store!(b, l, t, r, i)
         v_bl = unit_vector_from(b, l)
         v_br = unit_vector_from(b, r)
         v_tl = unit_vector_from(t, l)
         v_tr = unit_vector_from(t, r)
 
-        i = Threads.threadid()
         index[i] = Padding((b, l), index[i].padding)
         cache[i] = Padding((v_bl, v_br, v_tl, v_tr), cache[i].padding)
         cache[i].value
     end
 
-    function load()
-        cache[Threads.threadid()].value
+    function load(i)
+        cache[i].value
     end
 
-    store!(0, 0, 1, 1)
+    store!(0, 0, 1, 1, 1)
 
-    global function perlin_noise(x, y)
+    global function perlin_noise(x, y; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
 
-        v_bl, v_br, v_tl, v_tr = if index[Threads.threadid()].value == (b, l)
-            load()
+        v_bl, v_br, v_tl, v_tr = if index[ti].value == (b, l)
+            load(ti)
         else
-            store!(b, l, t, r)
+            store!(b, l, t, r, ti)
         end
 
         return perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy)
@@ -57,10 +59,10 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), Threads.nt
 end
 
 
-let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), Threads.nthreads()),
-    cache::Vector{pad(NTuple{8, Tuple{Float64, Float64, Float64}})} = zeros(pad(NTuple{8, Tuple{Float64, Float64, Float64}}), Threads.nthreads())
+let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), MAX_NR_THREADS),
+    cache::Vector{pad(NTuple{8, Tuple{Float64, Float64, Float64}})} = zeros(pad(NTuple{8, Tuple{Float64, Float64, Float64}}), MAX_NR_THREADS)
 
-    function store!(b, l, t, r, a, o)
+    function store!(b, l, t, r, a, o, i)
         v_bla = unit_vector_from(b, l, a)
         v_bra = unit_vector_from(b, r, a)
         v_tla = unit_vector_from(t, l, a)
@@ -70,27 +72,27 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
         v_tlo = unit_vector_from(t, l, o)
         v_tro = unit_vector_from(t, r, o)
 
-        i = Threads.threadid()
         index[i] = Padding((b, l, a), index[i].padding)
         cache[i] = Padding((v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro), cache[i].padding)
         cache[i].value
     end
 
-    function load()
-        cache[Threads.threadid()].value
+    function load(i)
+        cache[i].value
     end
 
-    store!(0, 0, 1, 1, 0, 1)
+    store!(0, 0, 1, 1, 0, 1, 1)
 
-    global function perlin_noise(x, y, z)
+    global function perlin_noise(x, y, z; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)
 
-        v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro = if index[Threads.threadid()].value == (b, l, a)
-            load()
+        v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro = if index[ti].value == (b, l, a)
+            load(ti)
         else
-            store!(b, l, t, r, a, o)
+            store!(b, l, t, r, a, o, ti)
         end
 
         return perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz)
@@ -111,10 +113,10 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
 end
 
 
-let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), Threads.nthreads()),
-    cache::Vector{pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}})} = zeros(pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}}), Threads.nthreads())
+let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), MAX_NR_THREADS),
+    cache::Vector{pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}})} = zeros(pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}}), MAX_NR_THREADS)
 
-    function store!(b, l, t, r, a, o, w1, w2)
+    function store!(b, l, t, r, a, o, w1, w2, i)
         v_bla1 = unit_vector_from(b, l, a, w1)
         v_bra1 = unit_vector_from(b, r, a, w1)
         v_tla1 = unit_vector_from(t, l, a, w1)
@@ -132,7 +134,6 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
         v_tlo2 = unit_vector_from(t, l, o, w2)
         v_tro2 = unit_vector_from(t, r, o, w2)
 
-        i = Threads.threadid()
         index[i] = Padding((b, l, a, w1), index[i].padding)
         cache[i] = Padding(
             (v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2),
@@ -140,22 +141,23 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
         cache[i].value
     end
 
-    function load()
-        cache[Threads.threadid()].value
+    function load(i)
+        cache[i].value
     end
 
-    store!(0, 0, 1, 1, 0, 1, 0, 1)
+    store!(0, 0, 1, 1, 0, 1, 0, 1, 1)
 
-    global function perlin_noise(x, y, z, w)
+    global function perlin_noise(x, y, z, w; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)
         w1, w2, dw = bounds(w)
 
-        v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2 = if index[Threads.threadid()].value == (b, l, a, w1)
-            load()
+        v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2 = if index[ti].value == (b, l, a, w1)
+            load(ti)
         else
-            store!(b, l, t, r, a, o, w1, w2)
+            store!(b, l, t, r, a, o, w1, w2, ti)
         end
 
         return perlin4d(

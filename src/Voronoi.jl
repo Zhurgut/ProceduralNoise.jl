@@ -1,11 +1,9 @@
 
-let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
-    index::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
+let points::Matrix{Float64} = zeros(16, MAX_NR_THREADS),
+    index::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
 
-    function get_points!(idx, pos)
-        ti = Threads.threadid()
-
+    function get_points!(idx, pos, ti)
         r, h = random_from(pos)
 
         p, h = more_random_from(h)
@@ -27,18 +25,16 @@ let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
         return idx
     end
 
-    function load()
-        ti = Threads.threadid()
+    function load(ti)
         @view points[1:nr_points[ti].value, ti]
     end
 
-    function store!(l)
+    function store!(l, ti)
         i = 1
         for f=-2:2
-            i = get_points!(i, l+f)
+            i = get_points!(i, l+f, ti)
         end
 
-        ti = Threads.threadid()
         len = i-1
         nr_points[ti] = Padding(len, nr_points[ti].padding)
         index[ti] = Padding(l, index[ti].padding)
@@ -46,25 +42,23 @@ let points::Matrix{Float64} = zeros(16, Threads.nthreads()),
         @view points[1:len, ti]
     end
 
-    store!(0)
+    store!(0, 1)
 
 
-    global function voronoi_points(x)
+    global function voronoi_points(x; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, _, _ = bounds(x)
-        ti = Threads.threadid()
-        return index[ti].value == l ? load() : store!(l)
+        return index[ti].value == l ? load(ti) : store!(l, ti)
     end
 
 end
 
 
-let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, Threads.nthreads())),
-    index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), Threads.nthreads())
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
+let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, MAX_NR_THREADS)),
+    index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THREADS)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
 
-    function get_points!(idx, p1, p2)
-        ti = Threads.threadid()
-
+    function get_points!(idx, p1, p2, ti)
         r, h = random_from(p1, p2)
 
         x, h = more_random_from(h)
@@ -89,20 +83,18 @@ let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, Threads.
         return idx
     end
 
-    function load()
-        ti = Threads.threadid()
+    function load(ti)
         @view points[1:nr_points[ti].value, ti]
     end
 
-    function store!(l, b)
+    function store!(l, b, ti)
         i = 1
         for x=-2:2, y=-2:2
             if (abs(x) + abs(y) <= 3)
-                i = get_points!(i, l+x, b+y)
+                i = get_points!(i, l+x, b+y, ti)
             end
         end
 
-        ti = Threads.threadid()
         len = i-1
         nr_points[ti] = Padding(len, nr_points[ti].padding)
         index[ti] = Padding((l, b), index[ti].padding)
@@ -110,28 +102,26 @@ let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, Threads.
         @view points[1:len, ti]
     end
 
-    store!(0, 0)
+    store!(0, 0, 1)
 
 
-    global function voronoi_points(x, y)
+    global function voronoi_points(x, y; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
-        ti = Threads.threadid()
 
-        return index[ti].value == (l, b) ? load() : store!(l, b)
+        return index[ti].value == (l, b) ? load(ti) : store!(l, b, ti)
     end
 
 end
 
 
 
-let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, Threads.nthreads())),
-    index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), Threads.nthreads())
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
+let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, MAX_NR_THREADS)),
+    index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), MAX_NR_THREADS)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
 
-    function get_points!(idx, p1, p2, p3)
-        ti = Threads.threadid()
-
+    function get_points!(idx, p1, p2, p3, ti)
         r, h = random_from(p1, p2, p3)
 
         x, h = more_random_from(h)
@@ -159,20 +149,18 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, Threads
         return idx
     end
 
-    function load()
-        ti = Threads.threadid()
+    function load(ti)
         @view points[1:nr_points[ti].value, ti]
     end
 
-    function store!(l, b, a)
+    function store!(l, b, a, ti)
         i = 1
         for x=-2:2, y=-2:2, z=-2:2
             if (abs(x) + abs(y) + abs(z) <= 5)
-                i = get_points!(i, l+x, b+y, a+z)
+                i = get_points!(i, l+x, b+y, a+z, ti)
             end
         end
 
-        ti = Threads.threadid()
         len = i-1
         nr_points[ti] = Padding(len, nr_points[ti].padding)
         index[ti] = Padding((l, b, a), index[ti].padding)
@@ -180,15 +168,15 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, Threads
         @view points[1:len, ti]
     end
 
-    store!(0, 0, 0)
+    store!(0, 0, 0, 1)
 
-    global function voronoi_points(x, y, z)
+    global function voronoi_points(x, y, z; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
         a, _, _ = bounds(z)
-        ti = Threads.threadid()
 
-        return index[ti].value == (l, b, a) ? load() : store!(l, b, a)
+        return index[ti].value == (l, b, a) ? load(ti) : store!(l, b, a, ti)
     end
 
 end
@@ -196,13 +184,11 @@ end
 
 
 
-let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, Threads.nthreads())),
-    index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), Threads.nthreads())
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), Threads.nthreads())
+let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, MAX_NR_THREADS)),
+    index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), MAX_NR_THREADS)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
 
-    function get_points!(idx, p1, p2, p3, p4)
-        ti = Threads.threadid()
-
+    function get_points!(idx, p1, p2, p3, p4, ti)
         r, h = random_from(p1, p2, p3, p4)
 
         x, h = more_random_from(h)
@@ -233,21 +219,19 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, Thread
         return idx
     end
 
-    function load()
-        ti = Threads.threadid()
+    function load(ti)
         @view points[1:nr_points[ti].value, ti]
     end
 
-    function store!(l, b, a, v)
+    function store!(l, b, a, v, ti)
         i = 1
         
         for x=-2:2, y=-2:2, z=-2:2, w=-2:2
             if (abs(x) + abs(y) + abs(z) + abs(w) <= 7)
-                i = get_points!(i, l+x, b+y, a+z, v+w)
+                i = get_points!(i, l+x, b+y, a+z, v+w, ti)
             end
         end
 
-        ti = Threads.threadid()
         len = i-1
         nr_points[ti] = Padding(len, nr_points[ti].padding)
         index[ti] = Padding((l, b, a, v), index[ti].padding)
@@ -255,17 +239,17 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, Thread
         @view points[1:len, ti]
     end
 
-    store!(0, 0, 0, 0)
+    store!(0, 0, 0, 0, 1)
 
 
-    global function voronoi_points(x, y, z, w)
+    global function voronoi_points(x, y, z, w; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
         a, _, _ = bounds(z)
         v, _, _  = bounds(w)
-        ti = Threads.threadid()
 
-        return index[ti].value == (l, b, a, v) ? load() : store!(l, b, a, v)
+        return index[ti].value == (l, b, a, v) ? load(ti) : store!(l, b, a, v, ti)
     end
 
 end
