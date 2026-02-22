@@ -3,9 +3,7 @@
 
 using LinearAlgebra: dot
 
-perlin_noise(coords...) = perlin_noise(Float64.(coords)...)
-
-function perlin_noise(x::Float64)
+function perlin_noise(x)
     l, r, d = bounds(x)
     vl, _ = unit_vector_from(l)
     vr, _ = unit_vector_from(r)
@@ -34,6 +32,15 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THR
 
     store!(0, 0, 1, 1, 1)
 
+    function perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy)
+        bl = dot(v_bl, (dx,   dy))
+        br = dot(v_br, (dx-1, dy))
+        tl = dot(v_tl, (dx,   dy-1))
+        tr = dot(v_tr, (dx-1, dy-1))
+
+        return fma(sqrt(0.5), interpolate(dx, dy, bl, br, tl, tr), 0.5)
+    end
+
     global function perlin_noise(x, y; thread_idx=1)
         ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, r, dx = bounds(x)
@@ -48,14 +55,7 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THR
         return perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy)
     end
 
-    function perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy)
-        bl = dot(v_bl, (dx,   dy))
-        br = dot(v_br, (dx-1, dy))
-        tl = dot(v_tl, (dx,   dy-1))
-        tr = dot(v_tr, (dx-1, dy-1))
-
-        return fma(sqrt(0.5), interpolate(dx, dy, bl, br, tl, tr), 0.5)
-    end
+    
 end
 
 
@@ -83,6 +83,19 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
 
     store!(0, 0, 1, 1, 0, 1, 1)
 
+    function perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz)
+        bla = dot(v_bla, (dx,   dy,   dz))
+        bra = dot(v_bra, (dx-1, dy,   dz))
+        tla = dot(v_tla, (dx,   dy-1, dz))
+        tra = dot(v_tra, (dx-1, dy-1, dz))
+        blo = dot(v_blo, (dx,   dy  , dz-1))
+        bro = dot(v_bro, (dx-1, dy  , dz-1))
+        tlo = dot(v_tlo, (dx,   dy-1, dz-1))
+        tro = dot(v_tro, (dx-1, dy-1, dz-1))
+
+        return fma(sqrt(1 / 3), interpolate(dx, dy, dz, bla, bra, tla, tra, blo, bro, tlo, tro), 0.5)
+    end
+
     global function perlin_noise(x, y, z; thread_idx=1)
         ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
         l, r, dx = bounds(x)
@@ -98,18 +111,7 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
         return perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz)
     end
 
-    function perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz)
-        bla = dot(v_bla, (dx,   dy,   dz))
-        bra = dot(v_bra, (dx-1, dy,   dz))
-        tla = dot(v_tla, (dx,   dy-1, dz))
-        tra = dot(v_tra, (dx-1, dy-1, dz))
-        blo = dot(v_blo, (dx,   dy  , dz-1))
-        bro = dot(v_bro, (dx-1, dy  , dz-1))
-        tlo = dot(v_tlo, (dx,   dy-1, dz-1))
-        tro = dot(v_tro, (dx-1, dy-1, dz-1))
-
-        return fma(sqrt(1 / 3), interpolate(dx, dy, dz, bla, bra, tla, tra, blo, bro, tlo, tro), 0.5)
-    end
+    
 end
 
 
@@ -147,25 +149,6 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
 
     store!(0, 0, 1, 1, 0, 1, 0, 1, 1)
 
-    global function perlin_noise(x, y, z, w; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
-        l, r, dx = bounds(x)
-        b, t, dy = bounds(y)
-        a, o, dz = bounds(z)
-        w1, w2, dw = bounds(w)
-
-        v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2 = if index[ti].value == (b, l, a, w1)
-            load(ti)
-        else
-            store!(b, l, t, r, a, o, w1, w2, ti)
-        end
-
-        return perlin4d(
-            v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, 
-            v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2, 
-            dx, dy, dz, dw)
-    end
-
     function perlin4d(
             v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, 
             v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2, 
@@ -192,6 +175,27 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
             bla1, bra1, tla1, tra1, blo1, bro1, tlo1, tro1, 
             bla2, bra2, tla2, tra2, blo2, bro2, tlo2, tro2), 0.5)
     end
+
+    global function perlin_noise(x, y, z, w; thread_idx=1)
+        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+        l, r, dx = bounds(x)
+        b, t, dy = bounds(y)
+        a, o, dz = bounds(z)
+        w1, w2, dw = bounds(w)
+
+        v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2 = if index[ti].value == (b, l, a, w1)
+            load(ti)
+        else
+            store!(b, l, t, r, a, o, w1, w2, ti)
+        end
+
+        return perlin4d(
+            v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, 
+            v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2, 
+            dx, dy, dz, dw)
+    end
+
+    
 end
 
 
