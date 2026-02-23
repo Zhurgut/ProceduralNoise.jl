@@ -2,7 +2,7 @@
 
 # divergence free flow fields
 
-function sim_noise2d(x, y; tm=nothing)
+function sim_noise2d(x, y; tm=nothing, cache_index=nothing)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
 
@@ -26,7 +26,7 @@ function sim_noise2d(x, y; tm=nothing)
 end
 
 
-function sim_noise2d(x, y, tm)
+function sim_noise2d(x, y, tm; cache_index=nothing)
     t1, t2, dt = bounds(tm)
     v1 = sim_noise2d(x, y; tm=t1)
     v2 = sim_noise2d(x, y; tm=t2)
@@ -35,7 +35,7 @@ end
 
 
 
-function sim_noise3d(x, y, z; tm=nothing)
+function sim_noise3d(x, y, z; tm=nothing, cache_index=nothing)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     a, o, dz = bounds(z)
@@ -87,7 +87,7 @@ function sim_noise3d(x, y, z; tm=nothing)
 end
 
 
-function sim_noise3d(x, y, z, tm)
+function sim_noise3d(x, y, z, tm; cache_index=nothing)
     t1, t2, dt = bounds(tm)
     v1 = sim_noise3d(x, y, z; tm=t1)
     v2 = sim_noise3d(x, y, z; tm=t2)

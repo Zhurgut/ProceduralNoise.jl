@@ -3,7 +3,7 @@
 
 using LinearAlgebra: dot
 
-function perlin_noise(x)
+function perlin_noise(x; cache_index=nothing)
     l, r, d = bounds(x)
     vl, _ = unit_vector_from(l)
     vr, _ = unit_vector_from(r)
@@ -12,8 +12,8 @@ end
 
 
 
-let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THREADS),
-    cache::Vector{pad(NTuple{4, Tuple{Float64, Float64}})} = zeros(pad(NTuple{4, Tuple{Float64, Float64}}), MAX_NR_THREADS)
+let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), NR_CACHES),
+    cache::Vector{pad(NTuple{4, Tuple{Float64, Float64}})} = zeros(pad(NTuple{4, Tuple{Float64, Float64}}), NR_CACHES)
 
     function store!(b, l, t, r, i)
         v_bl = unit_vector_from(b, l)
@@ -41,8 +41,8 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THR
         return fma(sqrt(0.5), interpolate(dx, dy, bl, br, tl, tr), 0.5)
     end
 
-    global function perlin_noise(x, y; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function perlin_noise(x, y; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
 
@@ -59,8 +59,8 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THR
 end
 
 
-let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), MAX_NR_THREADS),
-    cache::Vector{pad(NTuple{8, Tuple{Float64, Float64, Float64}})} = zeros(pad(NTuple{8, Tuple{Float64, Float64, Float64}}), MAX_NR_THREADS)
+let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), NR_CACHES),
+    cache::Vector{pad(NTuple{8, Tuple{Float64, Float64, Float64}})} = zeros(pad(NTuple{8, Tuple{Float64, Float64, Float64}}), NR_CACHES)
 
     function store!(b, l, t, r, a, o, i)
         v_bla = unit_vector_from(b, l, a)
@@ -96,8 +96,8 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
         return fma(sqrt(1 / 3), interpolate(dx, dy, dz, bla, bra, tla, tra, blo, bro, tlo, tro), 0.5)
     end
 
-    global function perlin_noise(x, y, z; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function perlin_noise(x, y, z; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)
@@ -115,8 +115,8 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
 end
 
 
-let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), MAX_NR_THREADS),
-    cache::Vector{pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}})} = zeros(pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}}), MAX_NR_THREADS)
+let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), NR_CACHES),
+    cache::Vector{pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}})} = zeros(pad(NTuple{16, Tuple{Float64, Float64, Float64, Float64}}), NR_CACHES)
 
     function store!(b, l, t, r, a, o, w1, w2, i)
         v_bla1 = unit_vector_from(b, l, a, w1)
@@ -176,8 +176,8 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
             bla2, bra2, tla2, tra2, blo2, bro2, tlo2, tro2), 0.5)
     end
 
-    global function perlin_noise(x, y, z, w; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function perlin_noise(x, y, z, w; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)

@@ -25,13 +25,13 @@ function get_8_closest!(out_dists, p, points)
 end
 
 
-let index::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS),
-    distances::Matrix{Float64} = zeros(8, MAX_NR_THREADS)
+let index::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES),
+    distances::Matrix{Float64} = zeros(8, NR_CACHES)
 
-    global function worley_noise(x; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function worley_noise(x; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
 
-        points = voronoi_points(x; thread_idx=ti)
+        points = voronoi_points(x; cache_index=ti)
         normalizers = (1.0, 1/1.5, 1/2, 1/2.5, 1/3)
         dists = @view(distances[1:5, ti])
         get_8_closest!(dists, x, points)
@@ -41,10 +41,10 @@ let index::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS),
         dists
     end
 
-    global function worley_noise(x, y; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function worley_noise(x, y; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
 
-        points = voronoi_points(x, y; thread_idx=ti)
+        points = voronoi_points(x, y; cache_index=ti)
         normalizers = (sqrt(0.5), sqrt(0.4), sqrt(4/13), sqrt(50/169), sqrt(0.2), sqrt(0.2), sqrt(0.2), sqrt(16/85))
         dists = @view(distances[1:8, ti])
         get_8_closest!(dists, (x, y), points)
@@ -54,10 +54,10 @@ let index::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS),
         dists
     end
 
-    global function worley_noise(x, y, z; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function worley_noise(x, y, z; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
 
-        points = voronoi_points(x, y, z; thread_idx=ti)
+        points = voronoi_points(x, y, z; cache_index=ti)
         normalizers = (sqrt(1/3), sqrt(1/3), sqrt(4/14), sqrt(4/14), sqrt(4/17), sqrt(4/17), sqrt(50/219), sqrt(4/19))
         dists = @view(distances[1:8, ti])
         get_8_closest!(dists, (x, y, z), points)
@@ -67,10 +67,10 @@ let index::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS),
         dists
     end
 
-    global function worley_noise(x, y, z, w; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function worley_noise(x, y, z, w; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
 
-        points = voronoi_points(x, y, z, w; thread_idx=ti)
+        points = voronoi_points(x, y, z, w; cache_index=ti)
         normalizers = (0.5, 0.5, 0.5, 0.5, sqrt(2/9), sqrt(2/9), sqrt(2/9), sqrt(2/9))
         dists = @view(distances[1:8, ti])
         get_8_closest!(dists, (x, y, z, w), points)

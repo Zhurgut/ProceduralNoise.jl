@@ -9,17 +9,18 @@ export set_seed
 include("Random.jl")
 export random_noise
 
+
 function bounds(x)
     f = floor(x)
     l = Int(f)
-    return l, l+1, x-f
+    return l, l+1, Float64(x-f)
 end
 
 include("Value.jl")
 export value_noise
 
 
-const MAX_NR_THREADS::Int = 64
+const NR_CACHES::Int = 64
 
 # pad to the next cacheline
 struct Padding{T, P}
@@ -41,5 +42,8 @@ export worley_noise
 
 include("Simulation.jl")
 export sim_noise2d, sim_noise3d
+
+include("Fractal.jl")
+export fractal
 
 end

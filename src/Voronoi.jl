@@ -1,7 +1,7 @@
 
-let points::Matrix{Float64} = zeros(16, MAX_NR_THREADS),
-    index::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
+let points::Matrix{Float64} = zeros(16, NR_CACHES),
+    index::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
     function get_points!(idx, pos, ti)
         r, h = random_from(pos)
@@ -45,8 +45,8 @@ let points::Matrix{Float64} = zeros(16, MAX_NR_THREADS),
     store!(0, 1)
 
 
-    global function voronoi_points(x; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function voronoi_points(x; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, _, _ = bounds(x)
         return index[ti].value == l ? load(ti) : store!(l, ti)
     end
@@ -54,9 +54,9 @@ let points::Matrix{Float64} = zeros(16, MAX_NR_THREADS),
 end
 
 
-let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, MAX_NR_THREADS)),
-    index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), MAX_NR_THREADS)
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
+let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, NR_CACHES)),
+    index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), NR_CACHES)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
     function get_points!(idx, p1, p2, ti)
         r, h = random_from(p1, p2)
@@ -105,8 +105,8 @@ let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, MAX_NR_T
     store!(0, 0, 1)
 
 
-    global function voronoi_points(x, y; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function voronoi_points(x, y; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
 
@@ -117,9 +117,9 @@ end
 
 
 
-let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, MAX_NR_THREADS)),
-    index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), MAX_NR_THREADS)
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
+let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, NR_CACHES)),
+    index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), NR_CACHES)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
     function get_points!(idx, p1, p2, p3, ti)
         r, h = random_from(p1, p2, p3)
@@ -170,8 +170,8 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, MAX_NR_
 
     store!(0, 0, 0, 1)
 
-    global function voronoi_points(x, y, z; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function voronoi_points(x, y, z; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
         a, _, _ = bounds(z)
@@ -184,9 +184,9 @@ end
 
 
 
-let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, MAX_NR_THREADS)),
-    index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), MAX_NR_THREADS)
-    nr_points::Vector{pad(Int)} = zeros(pad(Int), MAX_NR_THREADS)
+let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, NR_CACHES)),
+    index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), NR_CACHES)
+    nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
     function get_points!(idx, p1, p2, p3, p4, ti)
         r, h = random_from(p1, p2, p3, p4)
@@ -242,8 +242,8 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, MAX_NR
     store!(0, 0, 0, 0, 1)
 
 
-    global function voronoi_points(x, y, z, w; thread_idx=1)
-        ti = mod(thread_idx-1, MAX_NR_THREADS) + 1
+    global function voronoi_points(x, y, z, w; cache_index=1)
+        ti = mod(cache_index-1, NR_CACHES) + 1
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
         a, _, _ = bounds(z)

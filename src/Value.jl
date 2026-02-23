@@ -1,12 +1,12 @@
 
-function value_noise(x)
+function value_noise(x; cache_index=nothing)
     l, r, dx = bounds(x)
     vl = random_from(l)[1]
     vr = random_from(r)[1]
     return interpolate(dx, vl, vr)
 end
 
-function value_noise(x, y)
+function value_noise(x, y; cache_index=nothing)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     bl = random_from(b, l)[1]
@@ -16,7 +16,7 @@ function value_noise(x, y)
     return interpolate(dx, dy, bl, br, tl, tr)
 end
 
-function value_noise(x, y, z)
+function value_noise(x, y, z; cache_index=nothing)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     a, o, dz = bounds(z)
@@ -31,7 +31,7 @@ function value_noise(x, y, z)
     return interpolate(dx, dy, dz, abl, abr, atl, atr, obl, obr, otl, otr)
 end
 
-function value_noise(x, y, z, w)
+function value_noise(x, y, z, w; cache_index=nothing)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     a, o, dz = bounds(z)
