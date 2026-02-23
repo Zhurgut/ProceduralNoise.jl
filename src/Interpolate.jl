@@ -1,5 +1,8 @@
 module Interpolate
-export interpolate
+export interpolate, bell
+
+
+bell(x) = (x*x) * fma(fma(16, x, -32), x, 16)
 
 
 function interpolate(x, l, r)

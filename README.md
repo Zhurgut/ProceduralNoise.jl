@@ -32,8 +32,15 @@ Distance to the 4th-closest point (F2):
 <img src="images/worley2minus1.png"/>
 
 
+## Simulation Noise
+We also have [Simulation Noise](https://en.wikipedia.org/wiki/Simulation_noise), which can be used to genereate divergence-free flow fields
+
+<img src="images/sim2d.png"/>
+
+
 ### TODO
 Simplex Noise
-
-Simulation noises for divergence-free flow fields: [Simulation Noise](https://en.wikipedia.org/wiki/Simulation_noise)
+Fractal Noise
+noise derivatives
+more simulation noises for divergence-free flow fields?
 

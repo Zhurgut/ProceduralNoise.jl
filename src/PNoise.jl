@@ -39,6 +39,7 @@ include("Voronoi.jl")
 include("Worley.jl")
 export worley_noise
 
-
+include("Simulation.jl")
+export sim_noise2d, sim_noise3d
 
 end
