@@ -117,7 +117,7 @@ end
 
 
 
-let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, NR_CACHES)),
+let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (240, NR_CACHES)),
     index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), NR_CACHES)
     nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
@@ -156,7 +156,7 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (320, NR_CACH
     function store!(l, b, a, ti)
         i = 1
         for x=-2:2, y=-2:2, z=-2:2
-            if (abs(x) + abs(y) + abs(z) <= 5)
+            if (abs(x) + abs(y) + abs(z) <= 4)
                 i = get_points!(i, l+x, b+y, a+z, ti)
             end
         end
@@ -184,7 +184,7 @@ end
 
 
 
-let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, NR_CACHES)),
+let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (800, NR_CACHES)),
     index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int, Int}), NR_CACHES)
     nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
@@ -227,7 +227,7 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (1600, NR_CAC
         i = 1
         
         for x=-2:2, y=-2:2, z=-2:2, w=-2:2
-            if (abs(x) + abs(y) + abs(z) + abs(w) <= 7)
+            if (abs(x) + abs(y) + abs(z) + abs(w) <= 5)
                 i = get_points!(i, l+x, b+y, a+z, v+w, ti)
             end
         end
