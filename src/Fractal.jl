@@ -1,7 +1,7 @@
 
 
-octaves::NTuple{4, Float64} = (1.0, 0.5sqrt(5)+1, sqrt(6)+2, sqrt(77))
-weights::NTuple{4, Float64} = (8/15, 4/15, 2/15, 1/15)
+octaves::NTuple{4, Float64} = (1.0, cbrt(7), sqrt(15), sqrt(62))
+weights::NTuple{4, Float64} = (7/14, 4/14, 2/14, 1/14)
 
 Base.:(+)(x::NTuple{2, Float64}, y::NTuple{2, Float64}) = ntuple(i->(x[i] + y[i]), Val(2))
 Base.:(+)(x::NTuple{3, Float64}, y::NTuple{3, Float64}) = ntuple(i->(x[i] + y[i]), Val(3))
