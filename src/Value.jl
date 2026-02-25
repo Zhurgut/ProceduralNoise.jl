@@ -1,22 +1,30 @@
 
-function value_noise(x; cache_index=nothing)
+function value_noise(x; cache_index=nothing, gradient=false)
     l, r, dx = bounds(x)
     vl = random_from(l)[1]
     vr = random_from(r)[1]
-    return interpolate(dx, vl, vr)
+    if gradient
+        return ∇interpolate(dx, vl, vr)
+    else
+        return interpolate(dx, vl, vr)
+    end
 end
 
-function value_noise(x, y; cache_index=nothing)
+function value_noise(x, y; cache_index=nothing, gradient=false)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     bl = random_from(b, l)[1]
     br = random_from(b, r)[1]
     tl = random_from(t, l)[1]
     tr = random_from(t, r)[1]
-    return interpolate(dx, dy, bl, br, tl, tr)
+    if gradient
+        return ∇interpolate(dx, dy, bl, br, tl, tr)
+    else
+        return interpolate(dx, dy, bl, br, tl, tr)
+    end
 end
 
-function value_noise(x, y, z; cache_index=nothing)
+function value_noise(x, y, z; cache_index=nothing, gradient=false)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     a, o, dz = bounds(z)
@@ -28,10 +36,14 @@ function value_noise(x, y, z; cache_index=nothing)
     obr = random_from(o, b, r)[1]
     otl = random_from(o, t, l)[1]
     otr = random_from(o, t, r)[1]
-    return interpolate(dx, dy, dz, abl, abr, atl, atr, obl, obr, otl, otr)
+    if gradient
+        return ∇interpolate(dx, dy, dz, abl, abr, atl, atr, obl, obr, otl, otr)
+    else
+        return interpolate(dx, dy, dz, abl, abr, atl, atr, obl, obr, otl, otr)
+    end
 end
 
-function value_noise(x, y, z, w; cache_index=nothing)
+function value_noise(x, y, z, w; cache_index=nothing, gradient=false)
     l, r, dx = bounds(x)
     b, t, dy = bounds(y)
     a, o, dz = bounds(z)
@@ -52,6 +64,10 @@ function value_noise(x, y, z, w; cache_index=nothing)
     obr2 = random_from(o, b, r, w2)[1]
     otl2 = random_from(o, t, l, w2)[1]
     otr2 = random_from(o, t, r, w2)[1]
-    return interpolate(dx, dy, dz, dw, abl1, abr1, atl1, atr1, obl1, obr1, otl1, otr1, abl2, abr2, atl2, atr2, obl2, obr2, otl2, otr2)
+    if gradient
+        return ∇interpolate(dx, dy, dz, dw, abl1, abr1, atl1, atr1, obl1, obr1, otl1, otr1, abl2, abr2, atl2, atr2, obl2, obr2, otl2, otr2)
+    else
+        return interpolate(dx, dy, dz, dw, abl1, abr1, atl1, atr1, obl1, obr1, otl1, otr1, abl2, abr2, atl2, atr2, obl2, obr2, otl2, otr2)
+    end
 end
 

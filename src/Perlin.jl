@@ -3,11 +3,15 @@
 
 using LinearAlgebra: dot
 
-function perlin_noise(x; cache_index=nothing)
+function perlin_noise(x; cache_index=nothing, gradient=false)
     l, r, d = bounds(x)
     vl, _ = unit_vector_from(l)
     vr, _ = unit_vector_from(r)
-    return 0.5 + interpolate(d, vl*d, vr*(d-1))
+    if gradient
+        return  ∇interpolate(d, vl*d, vr*(d-1)) + interpolate(d, vl, vr)
+    else
+        return 0.5 + interpolate(d, vl*d, vr*(d-1))
+    end
 end
 
 
@@ -32,16 +36,22 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), NR_CACHES)
 
     store!(0, 0, 1, 1, 1)
 
-    function perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy)
+    function perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy, gradient)
         bl = dot(v_bl, (dx,   dy))
         br = dot(v_br, (dx-1, dy))
         tl = dot(v_tl, (dx,   dy-1))
         tr = dot(v_tr, (dx-1, dy-1))
 
-        return fma(sqrt(0.5), interpolate(dx, dy, bl, br, tl, tr), 0.5)
+        if gradient
+            Dx = interpolate(dx, dy, v_bl[1], v_br[1], v_tl[1], v_tr[1])
+            Dy = interpolate(dx, dy, v_bl[2], v_br[2], v_tl[2], v_tr[2])
+            return sqrt(0.5) .* (∇interpolate(dx, dy, bl, br, tl, tr) .+ (Dx, Dy))
+        else
+            return fma(sqrt(0.5), interpolate(dx, dy, bl, br, tl, tr), 0.5)
+        end
     end
 
-    global function perlin_noise(x, y; cache_index=1)
+    global function perlin_noise(x, y; cache_index=1, gradient=false)
         ti = mod(cache_index-1, NR_CACHES) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
@@ -52,7 +62,7 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), NR_CACHES)
             store!(b, l, t, r, ti)
         end
 
-        return perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy)
+        return perlin2d(v_bl, v_br, v_tl, v_tr, dx, dy, gradient)
     end
 
     
@@ -83,7 +93,7 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
 
     store!(0, 0, 1, 1, 0, 1, 1)
 
-    function perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz)
+    function perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz, gradient)
         bla = dot(v_bla, (dx,   dy,   dz))
         bra = dot(v_bra, (dx-1, dy,   dz))
         tla = dot(v_tla, (dx,   dy-1, dz))
@@ -93,10 +103,17 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
         tlo = dot(v_tlo, (dx,   dy-1, dz-1))
         tro = dot(v_tro, (dx-1, dy-1, dz-1))
 
-        return fma(sqrt(1 / 3), interpolate(dx, dy, dz, bla, bra, tla, tra, blo, bro, tlo, tro), 0.5)
+        if gradient
+            Dx = interpolate(dx, dy, dz, v_bla[1], v_bra[1], v_tla[1], v_tra[1], v_blo[1], v_bro[1], v_tlo[1], v_tro[1])
+            Dy = interpolate(dx, dy, dz, v_bla[2], v_bra[2], v_tla[2], v_tra[2], v_blo[2], v_bro[2], v_tlo[2], v_tro[2])
+            Dz = interpolate(dx, dy, dz, v_bla[3], v_bra[3], v_tla[3], v_tra[3], v_blo[3], v_bro[3], v_tlo[3], v_tro[3])
+            return sqrt(1/3) .* (∇interpolate(dx, dy, dz, bla, bra, tla, tra, blo, bro, tlo, tro) .+ (Dx, Dy, Dz))
+        else
+            return fma(sqrt(1 / 3), interpolate(dx, dy, dz, bla, bra, tla, tra, blo, bro, tlo, tro), 0.5)
+        end
     end
 
-    global function perlin_noise(x, y, z; cache_index=1)
+    global function perlin_noise(x, y, z; cache_index=1, gradient=false)
         ti = mod(cache_index-1, NR_CACHES) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
@@ -108,7 +125,7 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
             store!(b, l, t, r, a, o, ti)
         end
 
-        return perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz)
+        return perlin3d(v_bla, v_bra, v_tla, v_tra, v_blo, v_bro, v_tlo, v_tro, dx, dy, dz, gradient)
     end
 
     
@@ -152,7 +169,7 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
     function perlin4d(
             v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, 
             v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2, 
-            dx, dy, dz, dw)
+            dx, dy, dz, dw, gradient)
         bla1 = dot(v_bla1, (dx,   dy,   dz,   dw))
         bra1 = dot(v_bra1, (dx-1, dy,   dz,   dw))
         tla1 = dot(v_tla1, (dx,   dy-1, dz,   dw))
@@ -170,13 +187,37 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
         tlo2 = dot(v_tlo2, (dx,   dy-1, dz-1, dw-1))
         tro2 = dot(v_tro2, (dx-1, dy-1, dz-1, dw-1))
 
-        return fma(0.5, interpolate(
-            dx, dy, dz, dw, 
-            bla1, bra1, tla1, tra1, blo1, bro1, tlo1, tro1, 
-            bla2, bra2, tla2, tra2, blo2, bro2, tlo2, tro2), 0.5)
+        if gradient
+            Dx = interpolate(
+                dx, dy, dz, dw, 
+                v_bla1[1], v_bra1[1], v_tla1[1], v_tra1[1], v_blo1[1], v_bro1[1], v_tlo1[1], v_tro1[1], 
+                v_bla2[1], v_bra2[1], v_tla2[1], v_tra2[1], v_blo2[1], v_bro2[1], v_tlo2[1], v_tro2[1])
+            Dy = interpolate(
+                dx, dy, dz, dw, 
+                v_bla1[2], v_bra1[2], v_tla1[2], v_tra1[2], v_blo1[2], v_bro1[2], v_tlo1[2], v_tro1[2], 
+                v_bla2[2], v_bra2[2], v_tla2[2], v_tra2[2], v_blo2[2], v_bro2[2], v_tlo2[2], v_tro2[2])
+            Dz = interpolate(
+                dx, dy, dz, dw, 
+                v_bla1[3], v_bra1[3], v_tla1[3], v_tra1[3], v_blo1[3], v_bro1[3], v_tlo1[3], v_tro1[3], 
+                v_bla2[3], v_bra2[3], v_tla2[3], v_tra2[3], v_blo2[3], v_bro2[3], v_tlo2[3], v_tro2[3])
+            Dw = interpolate(
+                dx, dy, dz, dw, 
+                v_bla1[4], v_bra1[4], v_tla1[4], v_tra1[4], v_blo1[4], v_bro1[4], v_tlo1[4], v_tro1[4], 
+                v_bla2[4], v_bra2[4], v_tla2[4], v_tra2[4], v_blo2[4], v_bro2[4], v_tlo2[4], v_tro2[4])
+            G = ∇interpolate(
+                dx, dy, dz, dw, 
+                bla1, bra1, tla1, tra1, blo1, bro1, tlo1, tro1, 
+                bla2, bra2, tla2, tra2, blo2, bro2, tlo2, tro2)
+            return 0.5 .* (G .+ (Dx, Dy, Dz, Dw))
+        else
+            return fma(0.5, interpolate(
+                dx, dy, dz, dw, 
+                bla1, bra1, tla1, tra1, blo1, bro1, tlo1, tro1, 
+                bla2, bra2, tla2, tra2, blo2, bro2, tlo2, tro2), 0.5)
+        end
     end
 
-    global function perlin_noise(x, y, z, w; cache_index=1)
+    global function perlin_noise(x, y, z, w; cache_index=1, gradient=false)
         ti = mod(cache_index-1, NR_CACHES) + 1
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
@@ -192,7 +233,7 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
         return perlin4d(
             v_bla1, v_bra1, v_tla1, v_tra1, v_blo1, v_bro1, v_tlo1, v_tro1, 
             v_bla2, v_bra2, v_tla2, v_tra2, v_blo2, v_bro2, v_tlo2, v_tro2, 
-            dx, dy, dz, dw)
+            dx, dy, dz, dw, gradient)
     end
 
     

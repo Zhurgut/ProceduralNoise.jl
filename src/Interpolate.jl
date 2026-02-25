@@ -1,5 +1,5 @@
 module Interpolate
-export interpolate, bell
+export interpolate, ∇interpolate, bell
 
 
 bell(x) = (x*x) * fma(fma(16, x, -32), x, 16)
@@ -63,6 +63,55 @@ function interpolate(x, y, z, w, atl1, atr1, abl1, abr1, atl2, atr2, abl2, abr2,
     return fma(fw*w², o-a, a)
 end
 
+function ∇interpolate(x, l, r)
+    fx = fma(fma(30, x, -60), x, 30)
+    return fx*(x*x)*(r-l)
+end
+
+function ∇interpolate(x, y, tl, tr, bl, br)
+    l = interpolate(y, tl, bl)
+    r = interpolate(y, tr, br)
+    dx = ∇interpolate(x, l, r)
+
+    t = interpolate(x, tl, tr)
+    b = interpolate(x, bl, br)
+    dy = ∇interpolate(y, t, b)
+    return (dx, dy)
+end
+
+function ∇interpolate(x, y, z, tl1, tr1, bl1, br1, tl2, tr2, bl2, br2)
+    l = interpolate(y, z, tl1, bl1, tl2, bl2)
+    r = interpolate(y, z, tr1, br1, tr2, br2)
+    dx = ∇interpolate(x, l, r)
+
+    t = interpolate(x, z, tl1, tr1, tl2, tr2)
+    b = interpolate(x, z, bl1, br1, bl2, br2)
+    dy = ∇interpolate(y, t, b)
+
+    v1 = interpolate(x, y, tl1, tr1, bl1, br1)
+    v2 = interpolate(x, y, tl2, tr2, bl2, br2)
+    dz = ∇interpolate(z, v1, v2)
+    return (dx, dy, dz)
+end
+
+function ∇interpolate(x, y, z, w, atl1, atr1, abl1, abr1, atl2, atr2, abl2, abr2, otl1, otr1, obl1, obr1, otl2, otr2, obl2, obr2)
+    l = interpolate(y, z, w, atl1, abl1, atl2, abl2, otl1, obl1, otl2, obl2)
+    r = interpolate(y, z, w, atr1, abr1, atr2, abr2, otr1, obr1, otr2, obr2)
+    dx = ∇interpolate(x, l, r)
+
+    t = interpolate(x, z, w, atl1, atr1, atl2, atr2, otl1, otr1, otl2, otr2)
+    b = interpolate(x, z, w, abl1, abr1, abl2, abr2, obl1, obr1, obl2, obr2)
+    dy = ∇interpolate(y, t, b)
+
+    v1 = interpolate(x, y, w, atl1, atr1, abl1, abr1, otl1, otr1, obl1, obr1)
+    v2 = interpolate(x, y, w, atl2, atr2, abl2, abr2, otl2, otr2, obl2, obr2)
+    dz = ∇interpolate(z, v1, v2)
+
+    a = interpolate(x, y, z, atl1, atr1, abl1, abr1, atl2, atr2, abl2, abr2)
+    o = interpolate(x, y, z, otl1, otr1, obl1, obr1, otl2, otr2, obl2, obr2)
+    dw = ∇interpolate(w, a, o)
+    return (dx, dy, dz, dw)
+end
 
 
 end
