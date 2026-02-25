@@ -1,13 +1,13 @@
 
 function get_8_closest!(out_dists, p, points)
-    N = min(8, length(points))
+    N = min(8, length(out_dists))
     for i=1:N
         out_dists[i] = norm(points[i] .- p)
     end
 
-    sort!(@view(out_dists[1:N]))
+    sort!(out_dists)
 
-    for i = N+1:length(points)
+    for i = N+1:length(out_dists)
         d = norm(points[i] .- p)
         if d < out_dists[8]
             for j=1:8
