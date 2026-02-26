@@ -205,10 +205,49 @@ end
 
 end
 
-
-# X = -1:0.01:5
-# fx = perlin_noise.(X)
-# dfx = perlin_noise.(X, gradient=true)
-# Plots.plot(X, [fx dfx], ratio=1, ylims=(-2, 2)) |> display
-
+@testset "normalization" begin
+    fns = [random_noise, value_noise, perlin_noise]
+    for f in fns
+        println(f)
+        mn = 2.0
+        mx = -1.0
+        for i=1:100
+            r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
+            x = f(r1, cache_index=1)
+            mn, mx = min(mn, x), max(mx, x)
+            x = f(r1, r2, cache_index=2)
+            mn, mx = min(mn, x), max(mx, x)
+            x = f(r1, r2, r3, cache_index=3)
+            mn, mx = min(mn, x), max(mx, x)
+            x = f(r1, r2, r3, r4, cache_index=4)
+            mn, mx = min(mn, x), max(mx, x)
+        end
+        println(mn, ", ", mx)
+        @test mn >= 0
+        @test mx <= 1
+    end
     
+    mn = 2.0
+    mx = -1.0
+    println(worley_noise)
+    for i=1:100
+        r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
+        for i=1:8
+            if i <= 5
+                x = worley_noise(r1, cache_index=1)[i]
+                mn, mx = min(mn, x), max(mx, x)
+            end
+            x = worley_noise(r1, r2, cache_index=2)[i]
+            mn, mx = min(mn, x), max(mx, x)
+            x = worley_noise(r1, r2, r3, cache_index=3)[i]
+            mn, mx = min(mn, x), max(mx, x)
+            x = worley_noise(r1, r2, r3, r4, cache_index=4)[i]
+            mn, mx = min(mn, x), max(mx, x)
+        end
+    end
+    println(mn, ", ", mx)
+    @test mn >= 0
+    @test mx <= 1
+    
+end
+
