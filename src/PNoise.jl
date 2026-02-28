@@ -43,6 +43,8 @@ export worley_noise5, worley_noise6, worley_noise7, worley_noise8
 
 include("Simulation.jl")
 export sim_noise2d, sim_noise3d
+export curl_noise
+export bitangent_noise
 
 include("Fractal.jl")
 export fractal

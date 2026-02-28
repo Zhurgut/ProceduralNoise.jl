@@ -51,6 +51,18 @@ end
     fractal(worley_noise1, 10, 2.2, 3.3)
     fractal(worley_noise1, UInt8(10), 2.2, 3.3, 4.4)
 
+    fractal(sim_noise2d, 1, 2.2)
+    fractal(sim_noise2d, UInt8(1), 2.2, 3.3)
+
+    fractal(sim_noise3d, 1, 2.2, 3.3)
+    fractal(sim_noise3d, UInt8(1), 2.2, 3.3, 4.4)
+
+    fractal(curl_noise, 1, 2.2, 3.3)
+    fractal(curl_noise, UInt8(1), 2.2, 3.3, 4.4)
+
+    fractal(bitangent_noise, 1, 2.2, 3.3)
+    fractal(bitangent_noise, UInt8(1), 2.2, 3.3, 4.4)
+
 
     @test 0 == @allocations random_noise(1)
     @test 0 == @allocations random_noise(1, 2.2)
@@ -84,7 +96,13 @@ end
     @test 0 == @allocations sim_noise2d(1, 2.2, 3.3)
 
     @test 0 == @allocations sim_noise3d(1, 2.2, 5.6)
-    @test 0 == @allocations sim_noise3d(1, 2.2, 5.6, 3.3)
+    @test 0 == @allocations sim_noise3d(UInt8(1), 2.2, 5.6, 3.3)
+
+    @test 0 == @allocations curl_noise(1, 2.2, 5.6)
+    @test 0 == @allocations curl_noise(UInt8(1), 2.2, 5.6, 3.3)
+
+    @test 0 == @allocations bitangent_noise(1, 2.2, 5.6)
+    @test 0 == @allocations bitangent_noise(UInt8(1), 2.2, 5.6, 3.3)
 
     @test 0 == @allocations fractal(perlin_noise, 1)
     @test 0 == @allocations fractal(perlin_noise, 1)
@@ -117,6 +135,16 @@ end
     @test 0 == @allocations fractal(sim_noise3d, 1, 2.2, 3.3)
     @test 0 == @allocations fractal(sim_noise3d, UInt8(1), 2.2, 3.3, 4.4)
     @test 0 == @allocations fractal(sim_noise3d, 1, 2.2, 3.3, 4.4)
+
+    @test 0 == @allocations fractal(curl_noise, 1, 2.2, 3.3)
+    @test 0 == @allocations fractal(curl_noise, 1, 2.2, 3.3)
+    @test 0 == @allocations fractal(curl_noise, UInt8(1), 2.2, 3.3, 4.4)
+    @test 0 == @allocations fractal(curl_noise, 1, 2.2, 3.3, 4.4)
+
+    @test 0 == @allocations fractal(bitangent_noise, 1, 2.2, 3.3)
+    @test 0 == @allocations fractal(bitangent_noise, 1, 2.2, 3.3)
+    @test 0 == @allocations fractal(bitangent_noise, UInt8(1), 2.2, 3.3, 4.4)
+    @test 0 == @allocations fractal(bitangent_noise, 1, 2.2, 3.3, 4.4)
 
     @test 0 == @allocations value_noise(1, gradient=true)
     @test 0 == @allocations value_noise(1, 2.2, gradient=true)
@@ -151,18 +179,15 @@ end
     @test 0 == @allocations fractal(value_noise, 1, 2.2, 3.3, gradient=true)
     @test 0 == @allocations fractal(value_noise, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
 
-    @test 0 == @allocations fractal(sim_noise2d, 1, 2.2, gradient=true)
-    @test 0 == @allocations fractal(sim_noise2d, UInt8(1), 2.2, 3.3, gradient=true)
-
-    @test 0 == @allocations fractal(sim_noise3d, 1, 2.2, 3.3, gradient=true)
-    @test 0 == @allocations fractal(sim_noise3d, 1, 2.2, 3.3, gradient=true)
-    @test 0 == @allocations fractal(sim_noise3d, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
-    @test 0 == @allocations fractal(sim_noise3d, 1, 2.2, 3.3, 4.4, gradient=true)
-
     @test 0 == @allocations fractal(worley_noise1, 1, gradient=true)
     @test 0 == @allocations fractal(worley_noise1, 1, 2.2, gradient=true)
     @test 0 == @allocations fractal(worley_noise1, 1, 2.2, 3.3, gradient=true)
     @test 0 == @allocations fractal(worley_noise1, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
+    
+    @test 0 == @allocations fractal(worley_noise8, 1, gradient=true)
+    @test 0 == @allocations fractal(worley_noise8, 1, 2.2, gradient=true)
+    @test 0 == @allocations fractal(worley_noise8, 1, 2.2, 3.3, gradient=true)
+    @test 0 == @allocations fractal(worley_noise8, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
 end
 
 
