@@ -38,7 +38,8 @@ export perlin_noise
 
 include("Voronoi.jl")
 include("Worley.jl")
-export worley_noise
+export worley_noise1, worley_noise2, worley_noise3, worley_noise4
+export worley_noise5, worley_noise6, worley_noise7, worley_noise8
 
 include("Simulation.jl")
 export sim_noise2d, sim_noise3d
