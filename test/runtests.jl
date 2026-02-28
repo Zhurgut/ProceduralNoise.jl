@@ -27,14 +27,14 @@ end
     perlin_noise(10, 2.2, 3.3, 4.4)
     perlin_noise(10, 2.2, 3.3, 4.4)
 
-    worley_noise(10)
-    worley_noise(10)
-    worley_noise(10, 2.2)
-    worley_noise(10, 2.2)
-    worley_noise(10, 2.2, 3.3)
-    worley_noise(10, 2.2, 3.3)
-    worley_noise(UInt8(10), 2.2, 3.3, 4.4)
-    worley_noise(10, 2.2, 3.3, 4.4)
+    worley_noise1(10)
+    worley_noise1(10)
+    worley_noise1(10, 2.2)
+    worley_noise1(10, 2.2)
+    worley_noise1(10, 2.2, 3.3)
+    worley_noise1(10, 2.2, 3.3)
+    worley_noise1(UInt8(10), 2.2, 3.3, 4.4)
+    worley_noise1(10, 2.2, 3.3, 4.4)
 
     fractal(perlin_noise, 10)
     fractal(perlin_noise, 10, 2.2)
@@ -46,10 +46,10 @@ end
     fractal(perlin_noise, 10, 2.2, 3.3, gradient=true)
     fractal(perlin_noise, UInt8(10), 2.2, 3.3, 4.4, gradient=true)
 
-    fractal(worley_noise, 10)
-    fractal(worley_noise, 10, 2.2)
-    fractal(worley_noise, 10, 2.2, 3.3)
-    fractal(worley_noise, UInt8(10), 2.2, 3.3, 4.4)
+    fractal(worley_noise1, 10)
+    fractal(worley_noise1, 10, 2.2)
+    fractal(worley_noise1, 10, 2.2, 3.3)
+    fractal(worley_noise1, UInt8(10), 2.2, 3.3, 4.4)
 
 
     @test 0 == @allocations random_noise(1)
@@ -71,14 +71,14 @@ end
     @test 0 == @allocations perlin_noise(UInt8(1), 2.2, 3.3, 4.4)
     @test 0 == @allocations perlin_noise(1, 2.2, 3.3, 4.4)
 
-    @test 0 == @allocations worley_noise(1)
-    @test 0 == @allocations worley_noise(1)
-    @test 0 == @allocations worley_noise(1, 2.2)
-    @test 0 == @allocations worley_noise(1, 2.2)
-    @test 0 == @allocations worley_noise(1, 2.2, 3.3)
-    @test 0 == @allocations worley_noise(1, 2.2, 3.3)
-    @test 0 == @allocations worley_noise(UInt8(1), 2.2, 3.3, 4.4)
-    @test 0 == @allocations worley_noise(1, 2.2, 3.3, 4.4)
+    @test 0 == @allocations worley_noise1(1)
+    @test 0 == @allocations worley_noise1(1)
+    @test 0 == @allocations worley_noise1(1, 2.2)
+    @test 0 == @allocations worley_noise1(1, 2.2)
+    @test 0 == @allocations worley_noise1(1, 2.2, 3.3)
+    @test 0 == @allocations worley_noise1(1, 2.2, 3.3)
+    @test 0 == @allocations worley_noise1(UInt8(1), 2.2, 3.3, 4.4)
+    @test 0 == @allocations worley_noise1(1, 2.2, 3.3, 4.4)
 
     @test 0 == @allocations sim_noise2d(1, 2.2)
     @test 0 == @allocations sim_noise2d(1, 2.2, 3.3)
@@ -105,10 +105,10 @@ end
     @test 0 == @allocations fractal(value_noise, 1, 2.2, 3.3)
     @test 0 == @allocations fractal(value_noise, UInt8(1), 2.2, 3.3, 4.4)
 
-    @test 0 == @allocations fractal(worley_noise, 1)
-    @test 0 == @allocations fractal(worley_noise, 1, 2.2)
-    @test 0 == @allocations fractal(worley_noise, 1, 2.2, 3.3)
-    @test 0 == @allocations fractal(worley_noise, UInt8(1), 2.2, 3.3, 4.4)
+    @test 0 == @allocations fractal(worley_noise1, 1)
+    @test 0 == @allocations fractal(worley_noise1, 1, 2.2)
+    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, 3.3)
+    @test 0 == @allocations fractal(worley_noise1, UInt8(1), 2.2, 3.3, 4.4)
 
     @test 0 == @allocations fractal(sim_noise2d, 1, 2.2)
     @test 0 == @allocations fractal(sim_noise2d, UInt8(1), 2.2, 3.3)
@@ -159,17 +159,17 @@ end
     @test 0 == @allocations fractal(sim_noise3d, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
     @test 0 == @allocations fractal(sim_noise3d, 1, 2.2, 3.3, 4.4, gradient=true)
 
-    # @test 0 == @allocations fractal(worley_noise, 1)
-    # @test 0 == @allocations fractal(worley_noise, 1, 2.2)
-    # @test 0 == @allocations fractal(worley_noise, 1, 2.2, 3.3)
-    # @test 0 == @allocations fractal(worley_noise, UInt8(1), 2.2, 3.3, 4.4)
+    @test 0 == @allocations fractal(worley_noise1, 1, gradient=true)
+    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, gradient=true)
+    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, 3.3, gradient=true)
+    @test 0 == @allocations fractal(worley_noise1, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
 end
 
 
 
 @testset "gradients" begin
-    fns = [value_noise, perlin_noise]
-    N = 50
+    fns = [value_noise, perlin_noise, worley_noise1, worley_noise2, worley_noise3, worley_noise4, worley_noise5, worley_noise6, worley_noise7, worley_noise8]
+    N = 1
     for f in fns
         println(f)
         println("1D")
@@ -206,19 +206,51 @@ end
 end
 
 @testset "normalization" begin
-    fns = [random_noise, value_noise, perlin_noise]
+    N = 10000
+    fns = [random_noise, value_noise, perlin_noise, worley_noise1, worley_noise2, worley_noise3, worley_noise4, worley_noise5, worley_noise6, worley_noise7, worley_noise8]
     for f in fns
         println(f)
         mn = 2.0
         mx = -1.0
-        for i=1:100
-            r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
+        println("1D")
+        for i=1:N
+            r1 = 2000 * rand() - 1000
             x = f(r1, cache_index=1)
             mn, mx = min(mn, x), max(mx, x)
+        end
+        println(mn, ", ", mx)
+        @test mn >= 0
+        @test mx <= 1
+
+        mn = 2.0
+        mx = -1.0
+        println("2D")
+        for i=1:N
+            r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
             x = f(r1, r2, cache_index=2)
             mn, mx = min(mn, x), max(mx, x)
+        end
+        println(mn, ", ", mx)
+        @test mn >= 0
+        @test mx <= 1
+
+        mn = 2.0
+        mx = -1.0
+        println("3D")
+        for i=1:N
+            r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
             x = f(r1, r2, r3, cache_index=3)
             mn, mx = min(mn, x), max(mx, x)
+        end
+        println(mn, ", ", mx)
+        @test mn >= 0
+        @test mx <= 1
+
+        mn = 2.0
+        mx = -1.0
+        println("4D")
+        for i=1:N
+            r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
             x = f(r1, r2, r3, r4, cache_index=4)
             mn, mx = min(mn, x), max(mx, x)
         end
@@ -226,28 +258,6 @@ end
         @test mn >= 0
         @test mx <= 1
     end
-    
-    mn = 2.0
-    mx = -1.0
-    println(worley_noise)
-    for i=1:100
-        r1, r2, r3, r4 = 2000 .* rand(4) .- 1000
-        for i=1:8
-            if i <= 5
-                x = worley_noise(r1, cache_index=1)[i]
-                mn, mx = min(mn, x), max(mx, x)
-            end
-            x = worley_noise(r1, r2, cache_index=2)[i]
-            mn, mx = min(mn, x), max(mx, x)
-            x = worley_noise(r1, r2, r3, cache_index=3)[i]
-            mn, mx = min(mn, x), max(mx, x)
-            x = worley_noise(r1, r2, r3, r4, cache_index=4)[i]
-            mn, mx = min(mn, x), max(mx, x)
-        end
-    end
-    println(mn, ", ", mx)
-    @test mn >= 0
-    @test mx <= 1
     
 end
 

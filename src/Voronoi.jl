@@ -1,5 +1,5 @@
 
-let points::Matrix{Float64} = zeros(16, NR_CACHES),
+let points::Matrix{Float64} = zeros(24, NR_CACHES),
     index::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
     nr_points::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
@@ -31,7 +31,7 @@ let points::Matrix{Float64} = zeros(16, NR_CACHES),
 
     function store!(l, ti)
         i = 1
-        for f=-2:2
+        for f=-4:4
             i = get_points!(i, l+f, ti)
         end
 
