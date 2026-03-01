@@ -46,7 +46,7 @@ let points::Matrix{Float64} = zeros(24, NR_CACHES),
 
 
     global function voronoi_points(x; cache_index=1)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, _, _ = bounds(x)
         return index[ti].value == l ? load(ti) : store!(l, ti)
     end
@@ -106,7 +106,7 @@ let points::Matrix{NTuple{2, Float64}} = zeros(NTuple{2, Float64}, (64, NR_CACHE
 
 
     global function voronoi_points(x, y; cache_index=1)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
 
@@ -171,7 +171,7 @@ let points::Matrix{NTuple{3, Float64}} = zeros(NTuple{3, Float64}, (240, NR_CACH
     store!(0, 0, 0, 1)
 
     global function voronoi_points(x, y, z; cache_index=1)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
         a, _, _ = bounds(z)
@@ -243,7 +243,7 @@ let points::Matrix{NTuple{4, Float64}} = zeros(NTuple{4, Float64}, (800, NR_CACH
 
 
     global function voronoi_points(x, y, z, w; cache_index=1)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, _, _ = bounds(x)
         b, _, _ = bounds(y)
         a, _, _ = bounds(z)

@@ -52,7 +52,7 @@ let index::Vector{pad(Tuple{Int, Int})} = zeros(pad(Tuple{Int, Int}), NR_CACHES)
     end
 
     global function perlin_noise(x, y; cache_index=1, gradient=false)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
 
@@ -114,7 +114,7 @@ let index::Vector{pad(Tuple{Int, Int, Int})} = zeros(pad(Tuple{Int, Int, Int}), 
     end
 
     global function perlin_noise(x, y, z; cache_index=1, gradient=false)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)
@@ -218,7 +218,7 @@ let index::Vector{pad(Tuple{Int, Int, Int, Int})} = zeros(pad(Tuple{Int, Int, In
     end
 
     global function perlin_noise(x, y, z, w; cache_index=1, gradient=false)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         l, r, dx = bounds(x)
         b, t, dy = bounds(y)
         a, o, dz = bounds(z)

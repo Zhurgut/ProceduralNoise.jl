@@ -28,6 +28,57 @@ let distances::Matrix{Float64} = zeros(8, NR_CACHES)
 
 end
 
+function worley_noise(x; cache_index=1, normalize=true, gradient=false)
+    w8 = worley_noise8(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w1 = worley_noise1(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w2 = worley_noise2(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w3 = worley_noise3(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w4 = worley_noise4(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w5 = worley_noise5(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w6 = worley_noise6(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w7 = worley_noise7(x, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    return (w1, w2, w3, w4, w5, w6, w7, w8)
+end
+
+function worley_noise(x, y; cache_index=1, normalize=true, gradient=false)
+    w8 = worley_noise8(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w1 = worley_noise1(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w2 = worley_noise2(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w3 = worley_noise3(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w4 = worley_noise4(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w5 = worley_noise5(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w6 = worley_noise6(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w7 = worley_noise7(x, y, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    return (w1, w2, w3, w4, w5, w6, w7, w8)
+end
+
+function worley_noise(x, y, z; cache_index=1, normalize=true, gradient=false)
+    w8 = worley_noise8(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w1 = worley_noise1(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w2 = worley_noise2(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w3 = worley_noise3(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w4 = worley_noise4(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w5 = worley_noise5(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w6 = worley_noise6(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w7 = worley_noise7(x, y, z, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    return (w1, w2, w3, w4, w5, w6, w7, w8)
+end
+
+function worley_noise(x, y, z, w; cache_index=1, normalize=true, gradient=false)
+    w8 = worley_noise8(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w1 = worley_noise1(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w2 = worley_noise2(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w3 = worley_noise3(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w4 = worley_noise4(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w5 = worley_noise5(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w6 = worley_noise6(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    w7 = worley_noise7(x, y, z, w, cache_index=cache_index, normalize=normalize, gradient=gradient)
+    return (w1, w2, w3, w4, w5, w6, w7, w8)
+end
+
+
+
+
 let cache::Vector{pad(Float64)} = zeros(pad(Float64), NR_CACHES),
     level::Vector{pad(Int)} = zeros(pad(Int), NR_CACHES)
 
@@ -45,7 +96,7 @@ let cache::Vector{pad(Float64)} = zeros(pad(Float64), NR_CACHES),
     end
 
     function worley_noise(x, L, cache_index, normalize, gradient)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         max_dists = (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5)
         min_dists = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5) # since up to 3 points per cell
 
@@ -98,7 +149,7 @@ let cache::Vector{pad(NTuple{2, Float64})} = zeros(pad(NTuple{2, Float64}), NR_C
     end
 
     function worley_noise(x, y, L, cache_index, normalize, gradient)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         normalizers = (sqrt(0.5), sqrt(0.4), sqrt(4/13), sqrt(50/169), sqrt(0.2), sqrt(0.2), sqrt(0.2), sqrt(16/85))
 
         p = worley_point(Float64(x), Float64(y), L, ti)
@@ -150,7 +201,7 @@ let cache::Vector{pad(NTuple{3, Float64})} = zeros(pad(NTuple{3, Float64}), NR_C
     end
 
     function worley_noise(x, y, z, L, cache_index, normalize, gradient)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         normalizers = (sqrt(1/3), sqrt(1/3), sqrt(4/14), sqrt(4/14), sqrt(4/17), sqrt(4/17), sqrt(50/219), sqrt(4/19))
 
         p = worley_point(Float64(x), Float64(y), Float64(z), L, ti)
@@ -204,7 +255,7 @@ let cache::Vector{pad(NTuple{4, Float64})} = zeros(pad(NTuple{4, Float64}), NR_C
     end
 
     function worley_noise(x, y, z, w, L, cache_index, normalize, gradient)
-        ti = mod(cache_index-1, NR_CACHES) + 1
+        ti = check_cache_index(cache_index)
         normalizers = (0.5, 0.5, 0.5, 0.5, sqrt(2/9), sqrt(2/9), sqrt(2/9), sqrt(2/9))
 
         p = worley_point(Float64(x), Float64(y), Float64(z), Float64(w), L, ti)

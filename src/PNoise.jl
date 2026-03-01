@@ -21,6 +21,7 @@ export value_noise
 
 
 const NR_CACHES::Int = 64
+check_cache_index(cache_index) = (1:NR_CACHES)[cache_index]
 
 # pad to the next cacheline
 struct Padding{T, P}
@@ -38,6 +39,7 @@ export perlin_noise
 
 include("Voronoi.jl")
 include("Worley.jl")
+export worley_noise
 export worley_noise1, worley_noise2, worley_noise3, worley_noise4
 export worley_noise5, worley_noise6, worley_noise7, worley_noise8
 
