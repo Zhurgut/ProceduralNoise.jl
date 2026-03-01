@@ -179,10 +179,10 @@ end
     @test 0 == @allocations fractal(value_noise, 1, 2.2, 3.3, gradient=true)
     @test 0 == @allocations fractal(value_noise, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
 
-    @test 0 == @allocations fractal(worley_noise1, 1, gradient=true)
-    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, gradient=true)
-    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, 3.3, gradient=true)
-    @test 0 == @allocations fractal(worley_noise1, UInt8(1), 2.2, 3.3, 4.4, gradient=true)
+    @test 0 == @allocations fractal(worley_noise1, 1, gradient=true, nr_octaves=Val(3), persistence=0.4, lacunarity=2.2)
+    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, gradient=true, nr_octaves=Val(3), persistence=0.4, lacunarity=2.2)
+    @test 0 == @allocations fractal(worley_noise1, 1, 2.2, 3.3, gradient=true, nr_octaves=Val(3), persistence=0.4, lacunarity=2.2)
+    @test 0 == @allocations fractal(worley_noise1, UInt8(1), 2.2, 3.3, 4.4, gradient=true, nr_octaves=Val(3), persistence=0.4, lacunarity=2.2)
     
     @test 0 == @allocations fractal(worley_noise8, 1, gradient=true)
     @test 0 == @allocations fractal(worley_noise8, 1, 2.2, gradient=true)
