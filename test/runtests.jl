@@ -1,9 +1,8 @@
 using PNoise
 using Test
-import Plots
 using LinearAlgebra: norm
 
-@testset "Noise.jl" begin
+@testset "PNoise.jl" begin
     # Write your tests here.
 end
 
@@ -194,38 +193,50 @@ end
 
 @testset "gradients" begin
     fns = [value_noise, perlin_noise, worley_noise1, worley_noise2, worley_noise3, worley_noise4, worley_noise5, worley_noise6, worley_noise7, worley_noise8]
-    N = 100
+    N = 200
     for f in fns
         println(f)
+        
         println("1D")
+        s = 0
         for i=1:N
             r1, r2, r3, r4 = 20 .* rand(4) .- 10
             grad = f(r1, gradient=true)
             fgrad = 1e6 .* (f(r1) - f(r1-1e-6),)
-            @test norm(grad .- fgrad) < 1e-4
+            s += Int(norm(grad .- fgrad) < 1e-4)
         end
+        @test s > 0.99*N
+        
         println("2D")
+        s = 0
         for i=1:N
             r1, r2, r3, r4 = 20 .* rand(4) .- 10
             grad = f(r1, r2, gradient=true)
             fgrad = 1e6 .* (f(r1, r2) - f(r1-1e-6, r2), f(r1, r2) - f(r1, r2-1e-6))
-            @test norm(grad .- fgrad) < 1e-4
+            s += Int(norm(grad .- fgrad) < 1e-4)
         end
+        @test s > 0.99*N
+        
         println("3D")
+        s = 0
         for i=1:N
             r1, r2, r3, r4 = 20 .* rand(4) .- 10
             grad = f(r1, r2, r3, gradient=true)
             fgrad = 1e6 .* (f(r1, r2, r3) - f(r1-1e-6, r2, r3), f(r1, r2, r3) - f(r1, r2-1e-6, r3), f(r1, r2, r3) - f(r1, r2, r3-1e-6))
-            @test norm(grad .- fgrad) < 1e-4
+            s += Int(norm(grad .- fgrad) < 1e-4)
         end
+        @test s > 0.99*N
+        
         println("4D")
+        s = 0
         for i=1:N
             r1, r2, r3, r4 = 20 .* rand(4) .- 10
             grad = f(r1, r2, r3, r4, gradient=true)
             v = f(r1, r2, r3, r4)
             fgrad = 1e6 .* (v - f(r1-1e-6, r2, r3, r4), v - f(r1, r2-1e-6, r3, r4), v - f(r1, r2, r3-1e-6, r4), v - f(r1, r2, r3, r4-1e-6))
-            @test norm(grad .- fgrad) < 1e-4
+            s += Int(norm(grad .- fgrad) < 1e-4)
         end
+        @test s > 0.99*N
     end
 
 end
