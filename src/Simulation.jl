@@ -123,7 +123,7 @@ end
 
 function bitangent_noise(x, y, z; f1::F1=perlin_noise, f2::F2=perlin_noise, cache_index=1, gradient=nothing) where {F1, F2}
     ti = 2*cache_index-1
-    A = f1(x+100.5, 0.5-y, z+10.5, gradient=true, cache_index=ti)
+    A = f1(x+100.5, y+0.5, z+10.5, gradient=true, cache_index=ti)
     B = f2(x, y, z, gradient=true, cache_index=ti+1)
     return (
         A[2]*B[3] - A[3]*B[2],
@@ -134,7 +134,7 @@ end
 
 function bitangent_noise(x, y, z, t; f1::F1=perlin_noise, f2::F2=perlin_noise, cache_index=1, gradient=nothing) where {F1, F2}
     ti = 2*cache_index-1
-    A = f1(x+100.5, 0.5-y, z+10.5, t, gradient=true, cache_index=ti)
+    A = f1(x+100.5, y+0.5, z+10.5, t, gradient=true, cache_index=ti)
     B = f2(x, y, z, t, gradient=true, cache_index=ti+1)
     return (
         A[2]*B[3] - A[3]*B[2],
