@@ -1,4 +1,4 @@
-# PNoise.jl
+# ProceduralNoise.jl
 
 Procedural Noise functions in julia!
 

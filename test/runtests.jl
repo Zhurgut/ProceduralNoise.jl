@@ -1,8 +1,8 @@
-using PNoise
+using ProceduralNoise
 using Test
 using LinearAlgebra: norm
 
-@testset "PNoise.jl" begin
+@testset "ProceduralNoise.jl" begin
     # Write your tests here.
 end
 
@@ -196,7 +196,7 @@ end
     N = 200
     for f in fns
         println(f)
-        
+
         println("1D")
         s = 0
         for i=1:N
@@ -206,7 +206,7 @@ end
             s += Int(norm(grad .- fgrad) < 1e-4)
         end
         @test s > 0.99*N
-        
+
         println("2D")
         s = 0
         for i=1:N
@@ -216,7 +216,7 @@ end
             s += Int(norm(grad .- fgrad) < 1e-4)
         end
         @test s > 0.99*N
-        
+
         println("3D")
         s = 0
         for i=1:N
@@ -226,7 +226,7 @@ end
             s += Int(norm(grad .- fgrad) < 1e-4)
         end
         @test s > 0.99*N
-        
+
         println("4D")
         s = 0
         for i=1:N

@@ -1,4 +1,4 @@
-module PNoise
+module ProceduralNoise
 
 include("Interpolate.jl")
 using .Interpolate
