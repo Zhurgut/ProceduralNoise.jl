@@ -110,10 +110,10 @@ Simulation Noise can be used to generate divergence-free, 2D and 3D, flow fields
 
 ### Bitangent Noise
 ```
-(fx, fy, fz) = bitangent(x, y, z)
-(fx, fy, fz) = bitangent(x, y, z, t)
-(fx, fy, fz) = fractal(bitangent, x, y, z)
-(fx, fy, fz) = fractal(bitangent, x, y, z, t)
+(fx, fy, fz) = bitangent_noise(x, y, z)
+(fx, fy, fz) = bitangent_noise(x, y, z, t)
+(fx, fy, fz) = fractal(bitangent_noise, x, y, z)
+(fx, fy, fz) = fractal(bitangent_noise, x, y, z, t)
 ```
 
 
