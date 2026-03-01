@@ -194,7 +194,7 @@ end
 
 @testset "gradients" begin
     fns = [value_noise, perlin_noise, worley_noise1, worley_noise2, worley_noise3, worley_noise4, worley_noise5, worley_noise6, worley_noise7, worley_noise8]
-    N = 1
+    N = 100
     for f in fns
         println(f)
         println("1D")
@@ -283,6 +283,65 @@ end
         @test mn >= 0
         @test mx <= 1
     end
+    
+end
+
+@testset "divergence free" begin
+    N = 100
+    δ = 1e-6
+
+    t = 0.0
+    
+    println(sim_noise2d)
+    for i=1:N
+        x, y = 100*rand(2) .- 50
+        P, Q = sim_noise2d(x, y)
+        dPdx = (P - sim_noise2d(x+δ, y)[1]) / δ
+        dQdy = (Q - sim_noise2d(x, y+δ)[2]) / δ
+        div = dPdx + dQdy
+        @test abs(div) <= 1e-4
+
+        t += 0.1
+    end
+
+    for i=1:N
+        x, y = 100*rand(2) .- 50
+        P, Q = sim_noise2d(x, y, t)
+        dPdx = (P - sim_noise2d(x+δ, y, t)[1]) / δ
+        dQdy = (Q - sim_noise2d(x, y+δ, t)[2]) / δ
+        div = dPdx + dQdy
+        @test abs(div) <= 1e-4
+
+        t += 0.1
+    end
+
+    for f in [sim_noise3d, curl_noise, bitangent_noise]
+        println(f)
+        for i=1:N
+            x, y, z = 100*rand(3) .- 50
+            P, Q, R = f(x, y, z)
+            dPdx = (P - f(x+δ, y, z)[1]) / δ
+            dQdy = (Q - f(x, y+δ, z)[2]) / δ
+            dRdz = (R - f(x, y, z+δ)[3]) / δ
+            div = dPdx + dQdy + dRdz
+            @test abs(div) <= 1e-4
+
+            t += 0.1
+        end
+
+        for i=1:N
+            x, y, z = 100*rand(3) .- 50
+            P, Q, R = f(x, y, z, t)
+            dPdx = (P - f(x+δ, y, z, t)[1]) / δ
+            dQdy = (Q - f(x, y+δ, z, t)[2]) / δ
+            dRdz = (R - f(x, y, z+δ, t)[3]) / δ
+            div = dPdx + dQdy + dRdz
+            @test abs(div) <= 1e-4
+
+            t += 0.1
+        end
+    end
+
     
 end
 
