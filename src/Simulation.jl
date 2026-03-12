@@ -18,7 +18,7 @@ function sim_noise2d(x, y; tm=nothing, cache_index=nothing, gradient=nothing)
          fma(2, random_noise(r, t, tm), -1))
     end
 
-    fl, fr, fb, ft = e_tl - e_bl, e_tr - e_br, e_bl - e_br, e_tl - e_tr
+    fl, fr, fb, ft = e_bl - e_tl, e_br - e_tr, e_br - e_bl, e_tr - e_tl
     Vx = bell(dy) * interpolate(dx, fl, fr)
     Vy = bell(dx) * interpolate(dy, fb, ft)
 
@@ -40,47 +40,43 @@ function sim_noise3d(x, y, z; tm=nothing, cache_index=nothing, gradient=nothing)
     b, t, dy = bounds(y)
     a, o, dz = bounds(z)
 
-    e_ba, e_ta, e_la, e_ra, e_bl, e_br, e_tl, e_tr, e_bo, e_to, e_lo, e_ro = if isnothing(tm)
-        (fma(2, random_noise(l, b, a), -1), # ba
-         fma(2, random_noise(r, t, a), -1), # ta
-         fma(2, random_noise(l, t, a), -1), # la
-         fma(2, random_noise(r, b, a), -1), # ra
-
-         fma(2, random_noise(l, a, b), -1), # bl
-         fma(2, random_noise(r, a, b), -1), # br
-         fma(2, random_noise(l, a, t), -1), # tl
-         fma(2, random_noise(r, a, t), -1), # tr
-
+    e_la, e_lo, e_ra, e_ro, e_ba, e_bo, e_ta, e_to, e_bl, e_br, e_tl, e_tr = if isnothing(tm)
+        (fma(2, random_noise(b, l, a), -1), # la
+         fma(2, random_noise(b, l, o), -1), # lo
+         fma(2, random_noise(b, r, a), -1), # ra
+         fma(2, random_noise(b, r, o), -1), # ro
+         fma(2, random_noise(l, b, a), -1), # ba
          fma(2, random_noise(l, b, o), -1), # bo
-         fma(2, random_noise(r, t, o), -1), # to
-         fma(2, random_noise(l, t, o), -1), # lo
-         fma(2, random_noise(r, b, o), -1)  # ro
+         fma(2, random_noise(l, t, a), -1), # ta
+         fma(2, random_noise(l, t, o), -1), # to
+         fma(2, random_noise(a, b, l), -1), # bl
+         fma(2, random_noise(a, b, r), -1), # br
+         fma(2, random_noise(a, t, l), -1), # tl
+         fma(2, random_noise(a, t, r), -1)  # to
         )
     else
-        (fma(2, random_noise(l, b, a, tm), -1), # ba
-         fma(2, random_noise(r, t, a, tm), -1), # ta
-         fma(2, random_noise(l, t, a, tm), -1), # la
-         fma(2, random_noise(r, b, a, tm), -1), # ra
-
-         fma(2, random_noise(l, a, b, tm), -1), # bl
-         fma(2, random_noise(r, a, b, tm), -1), # br
-         fma(2, random_noise(l, a, t, tm), -1), # tl
-         fma(2, random_noise(r, a, t, tm), -1), # tr
-
+        (fma(2, random_noise(b, l, a, tm), -1), # la
+         fma(2, random_noise(b, l, o, tm), -1), # lo
+         fma(2, random_noise(b, r, a, tm), -1), # ra
+         fma(2, random_noise(b, r, o, tm), -1), # ro
+         fma(2, random_noise(l, b, a, tm), -1), # ba
          fma(2, random_noise(l, b, o, tm), -1), # bo
-         fma(2, random_noise(r, t, o, tm), -1), # to
-         fma(2, random_noise(l, t, o, tm), -1), # lo
-         fma(2, random_noise(r, b, o, tm), -1)  # ro
+         fma(2, random_noise(l, t, a, tm), -1), # ta
+         fma(2, random_noise(l, t, o, tm), -1), # to
+         fma(2, random_noise(a, b, l, tm), -1), # bl
+         fma(2, random_noise(a, b, r, tm), -1), # br
+         fma(2, random_noise(a, t, l, tm), -1), # tl
+         fma(2, random_noise(a, t, r, tm), -1)  # to
         )
     end
 
     fl, fr, fb, ft, fa, fo = (
-        (e_la - e_lo) - (e_bl - e_tl),
-        (e_ra - e_ro) - (e_br - e_tr),
-        (e_bl - e_br) - (e_ba - e_bo),
-        (e_tl - e_tr) - (e_ta - e_to),
-        (e_ba - e_ta) - (e_la - e_ra),
-        (e_bo - e_to) - (e_lo - e_ro)
+        (e_lo - e_la) + (e_bl - e_tl),
+        (e_ro - e_ra) + (e_br - e_tr),
+        (e_br - e_bl) + (e_ba - e_bo),
+        (e_tr - e_tl) + (e_ta - e_to),
+        (e_ta - e_ba) + (e_la - e_ra),
+        (e_to - e_bo) + (e_lo - e_ro)
     )
 
     Vx = bell(dy) * bell(dz) * interpolate(dx, fl, fr)
